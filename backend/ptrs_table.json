@@ -1,0 +1,66 @@
+{
+  "preclinical": {
+    "oncology": 0.065,
+    "immunology": 0.080,
+    "neurology": 0.055,
+    "rare_disease": 0.100,
+    "cardio_metabolic": 0.085,
+    "infectious_disease": 0.075
+  },
+  "ind_enabling": {
+    "oncology": 0.105,
+    "immunology": 0.120,
+    "neurology": 0.090,
+    "rare_disease": 0.140,
+    "cardio_metabolic": 0.115,
+    "infectious_disease": 0.110
+  },
+  "phase1": {
+    "oncology": 0.130,
+    "immunology": 0.175,
+    "neurology": 0.140,
+    "rare_disease": 0.215,
+    "cardio_metabolic": 0.190,
+    "infectious_disease": 0.170
+  },
+  "phase1_2": {
+    "oncology": 0.180,
+    "immunology": 0.240,
+    "neurology": 0.185,
+    "rare_disease": 0.280,
+    "cardio_metabolic": 0.240,
+    "infectious_disease": 0.220
+  },
+  "phase2": {
+    "oncology": 0.300,
+    "immunology": 0.400,
+    "neurology": 0.270,
+    "rare_disease": 0.440,
+    "cardio_metabolic": 0.390,
+    "infectious_disease": 0.370
+  },
+  "phase2b": {
+    "oncology": 0.400,
+    "immunology": 0.500,
+    "neurology": 0.360,
+    "rare_disease": 0.540,
+    "cardio_metabolic": 0.480,
+    "infectious_disease": 0.460
+  },
+  "phase3": {
+    "oncology": 0.600,
+    "immunology": 0.670,
+    "neurology": 0.560,
+    "rare_disease": 0.715,
+    "cardio_metabolic": 0.660,
+    "infectious_disease": 0.640
+  },
+  "nda_submitted": {
+    "oncology": 0.850,
+    "immunology": 0.870,
+    "neurology": 0.835,
+    "rare_disease": 0.895,
+    "cardio_metabolic": 0.865,
+    "infectious_disease": 0.855
+  }
+}

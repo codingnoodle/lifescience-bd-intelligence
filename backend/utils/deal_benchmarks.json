@@ -1,0 +1,99 @@
+{
+  "_source": "Pharma M&A + China Licensing 2025–2026 (as of Apr 2026). See docs/evaluation/Pharma_MA_2025-2026.xlsx",
+  "_note": "Upfront values only. Total deal values (incl. milestones) are 1.3–3x higher. Use upfront as the primary anchor for deal_range output.",
+
+  "ma_deals": [
+    {"asset": "Caplyta (lumateperone)", "buyer": "J&J", "ta": "neuroscience", "phase": "marketed", "upfront_bn": 14.6, "modality": "small molecule"},
+    {"asset": "Ogsiveo + Gomekli", "buyer": "Merck KGaA", "ta": "rare oncology", "phase": "marketed", "upfront_bn": 3.4, "modality": "small molecule"},
+    {"asset": "Ayvakit + elenestinib + BLU-808", "buyer": "Sanofi", "ta": "rare immunology", "phase": "marketed+ph2/3+ph1/2", "upfront_bn": 9.1, "modality": "small molecule KIT inhibitor"},
+    {"asset": "Ohtuvayre (ensifentrine)", "buyer": "Merck & Co.", "ta": "respiratory", "phase": "marketed", "upfront_bn": 10.0, "modality": "small molecule PDE3/4"},
+    {"asset": "Galafold + Pombiliti (rare disease LSDs)", "buyer": "BioMarin", "ta": "rare disease", "phase": "marketed+ph3", "upfront_bn": 4.8, "modality": "small molecule + ERT"},
+    {"asset": "HEPLISAV-B + Z-1018 vaccines", "buyer": "Sanofi", "ta": "vaccines", "phase": "marketed+ph1/2", "upfront_bn": 2.2, "modality": "adjuvanted vaccine"},
+    {"asset": "Del-zota + AOC 1001 + AOC 1020 (AOCs, neuromuscular)", "buyer": "Novartis", "ta": "neuroscience", "phase": "phase3+ph1/2", "upfront_bn": 12.0, "modality": "antibody-oligonucleotide conjugate"},
+    {"asset": "CD388 (drug-Fc conjugate, antifungal)", "buyer": "Merck & Co.", "ta": "infectious disease", "phase": "phase3", "upfront_bn": 9.2, "modality": "drug-Fc conjugate"},
+    {"asset": "Efruxifermin (FGF21, MASH)", "buyer": "Novo Nordisk", "ta": "cardiometabolic", "phase": "phase3", "upfront_bn": 4.7, "modality": "biologic Fc-FGF21"},
+    {"asset": "Pegozafermin (FGF21, MASH)", "buyer": "Roche", "ta": "cardiometabolic", "phase": "phase3", "upfront_bn": 2.4, "modality": "biologic FGF21"},
+    {"asset": "INZ-701 (ENPP1 Fc-fusion, rare)", "buyer": "BioMarin", "ta": "rare disease", "phase": "phase3", "upfront_bn": 0.27, "modality": "enzyme replacement"},
+    {"asset": "Anito-cel (BCMA CAR-T, hematology)", "buyer": "Gilead", "ta": "oncology hematology", "phase": "phase2_bla", "upfront_bn": 7.3, "modality": "autologous CAR-T"},
+    {"asset": "Metsera GLP-1 + amylin portfolio", "buyer": "Pfizer", "ta": "cardiometabolic", "phase": "phase2b", "upfront_bn": 4.9, "modality": "peptide GLP-1"},
+    {"asset": "Efimosfermin alfa (FGF21, MASH)", "buyer": "GSK", "ta": "cardiometabolic", "phase": "phase2", "upfront_bn": 1.2, "modality": "biologic FGF21"},
+    {"asset": "Cleminorexton + OX2R agonists (sleep/CNS)", "buyer": "Eli Lilly", "ta": "neuroscience", "phase": "phase2a", "upfront_bn": 6.3, "modality": "small molecule OX2R"},
+    {"asset": "TERN-701 (allosteric BCR::ABL1 TKI, CML/leukemia)", "buyer": "Merck & Co.", "ta": "oncology hematology", "phase": "phase1_2", "upfront_bn": 5.7, "modality": "small molecule allosteric TKI"},
+    {"asset": "TUB-040 + TUB-030 ADCs (solid tumors)", "buyer": "Gilead", "ta": "oncology solid tumor", "phase": "phase1b_2", "upfront_bn": 3.15, "modality": "ADC"},
+    {"asset": "CPTX2309 (in vivo CAR-T, autoimmune)", "buyer": "AbbVie", "ta": "immunology", "phase": "phase1", "upfront_bn": 2.1, "modality": "tLNP mRNA / in vivo CAR-T"},
+    {"asset": "VERVE-102 + VERVE-201 (base editing, cardiovascular)", "buyer": "Eli Lilly", "ta": "cardiovascular", "phase": "phase1b", "upfront_bn": 1.0, "modality": "CRISPR base editing"}
+  ],
+
+  "licensing_deals": [
+    {"asset": "BNT327 (PD-L1xVEGF bispecific)", "buyer": "BMS", "ta": "oncology", "phase": "phase3", "upfront_bn": 3.5, "total_bn": 11.1, "modality": "bispecific antibody"},
+    {"asset": "SSGJ-707 (PD-1xVEGF bispecific)", "buyer": "Pfizer", "ta": "oncology", "phase": "phase2", "upfront_bn": 1.25, "total_bn": 6.05, "modality": "bispecific antibody"},
+    {"asset": "RC148 (PD-1xVEGF bispecific)", "buyer": "AbbVie", "ta": "oncology", "phase": "phase1_2", "upfront_bn": 0.65, "total_bn": 5.6, "modality": "bispecific antibody"},
+    {"asset": "HRS-9821 + 11 programs (COPD/respiratory)", "buyer": "GSK", "ta": "respiratory", "phase": "phase1", "upfront_bn": 0.5, "total_bn": 12.5, "modality": "small molecule PDE3/4"},
+    {"asset": "Oral GLP-1 + cardiometabolic portfolio (AZ/CSPC)", "buyer": "AstraZeneca", "ta": "cardiometabolic", "phase": "preclinical", "upfront_bn": null, "total_bn": 18.5, "modality": "small molecule GLP-1"},
+    {"asset": "SYH2086 oral GLP-1 (Madrigal/CSPC)", "buyer": "Madrigal", "ta": "cardiometabolic", "phase": "preclinical", "upfront_bn": null, "total_bn": 2.0, "modality": "small molecule GLP-1"},
+    {"asset": "ADC platform (GeneQuantum/Biohaven)", "buyer": "Biohaven", "ta": "oncology", "phase": "preclinical", "upfront_bn": null, "total_bn": 13.0, "modality": "ADC platform"}
+  ],
+
+  "calibrated_ranges": {
+    "_note": "Upfront deal value ranges in $B, derived from 2025-2026 transaction data. Use as primary anchor.",
+
+    "oncology_hematology": {
+      "phase1_2":    {"low": 2.0, "mid": 4.5, "high": 7.5, "example": "Merck/TERN-701 $5.7B (allosteric TKI CML); Gilead/Arcellx $7.3B (BCMA CAR-T BLA)"},
+      "phase2":      {"low": 2.0, "mid": 5.0, "high": 8.0, "example": "Gilead/Arcellx $7.3B; comparable hematology oncology assets"},
+      "phase3":      {"low": 3.0, "mid": 7.0, "high": 12.0, "example": "Novartis/Avidity $12B (neuromuscular AOC)"},
+      "marketed":    {"low": 3.0, "mid": 6.0, "high": 14.0, "example": "J&J/Intra-Cellular $14.6B"}
+    },
+    "oncology_solid_tumor_adc": {
+      "preclinical":  {"low": 0.5, "mid": 2.0, "high": 5.0, "example": "ADC platforms up to $13B total; typically $0.5-2B upfront"},
+      "phase1_2":    {"low": 1.5, "mid": 3.5, "high": 6.0, "example": "Gilead/Tubulis $3.15B (NaPi2b ADC)"},
+      "phase2":      {"low": 2.0, "mid": 4.0, "high": 7.0, "example": "Comparable ADC oncology Phase 2 assets"},
+      "phase3":      {"low": 3.0, "mid": 6.0, "high": 10.0, "example": "Phase 3 ADC assets"}
+    },
+    "oncology_io_bispecific": {
+      "phase1_2":    {"low": 0.5, "mid": 1.5, "high": 3.0, "example": "AbbVie/RemeGen $0.65B upfront ($5.6B total)"},
+      "phase2":      {"low": 1.0, "mid": 2.5, "high": 4.5, "example": "Pfizer/3SBio $1.25B upfront ($6B total)"},
+      "phase3":      {"low": 1.5, "mid": 4.0, "high": 8.0, "example": "BMS/BNT327 $3.5B upfront ($11.1B total)"}
+    },
+    "cardiometabolic_glp1_obesity": {
+      "phase1_2":    {"low": 0.5, "mid": 1.5, "high": 3.0, "example": "Eli Lilly/Verve $1.0B (gene editing, Ph1b)"},
+      "phase2":      {"low": 1.0, "mid": 3.0, "high": 6.0, "example": "GSK/efimosfermin $1.2B; Pfizer/Metsera $4.9B"},
+      "phase3":      {"low": 2.0, "mid": 4.5, "high": 8.0, "example": "Novo/Akero $4.7B; Roche/89bio $2.4B"}
+    },
+    "immunology_autoimmune": {
+      "phase1":      {"low": 1.0, "mid": 2.0, "high": 4.0, "example": "AbbVie/Capstan $2.1B (in vivo CAR-T, Ph1)"},
+      "phase1_2":    {"low": 1.0, "mid": 2.5, "high": 5.0, "example": "Gilead/Ouro $2.18B (T-cell engager, Ph1/2)"},
+      "phase2":      {"low": 1.5, "mid": 3.5, "high": 7.0, "example": "Comparable immunology Phase 2"},
+      "marketed":    {"low": 3.0, "mid": 7.0, "high": 12.0, "example": "Sanofi/Blueprint $9.1B (KIT inhibitors)"}
+    },
+    "neuroscience": {
+      "phase1_2":    {"low": 0.5, "mid": 1.5, "high": 3.5, "example": "Eli Lilly/Verve $1.0B"},
+      "phase2":      {"low": 1.0, "mid": 3.5, "high": 7.0, "example": "Eli Lilly/Centessa $6.3B (OX2R, sleep, Phase 2a)"},
+      "phase3":      {"low": 3.0, "mid": 8.0, "high": 14.0, "example": "Novartis/Avidity $12B (neuromuscular AOC)"},
+      "marketed":    {"low": 5.0, "mid": 10.0, "high": 16.0, "example": "J&J/Intra-Cellular $14.6B (CNS marketed)"}
+    },
+    "rare_disease": {
+      "phase2":      {"low": 0.3, "mid": 1.0, "high": 3.0, "example": "Varies widely by indication size"},
+      "phase3":      {"low": 0.3, "mid": 2.0, "high": 6.0, "example": "BioMarin/Inozyme $0.27B vs. BioMarin/Amicus $4.8B"},
+      "marketed":    {"low": 1.0, "mid": 3.5, "high": 8.0, "example": "BioMarin/Amicus $4.8B"}
+    },
+    "respiratory": {
+      "phase1":      {"low": 0.3, "mid": 1.0, "high": 2.0, "example": "GSK/Hengrui $0.5B upfront ($12.5B total)"},
+      "phase3":      {"low": 2.0, "mid": 5.0, "high": 10.0, "example": "Merck/Cidara $9.2B (infectious disease/respiratory)"},
+      "marketed":    {"low": 3.0, "mid": 7.0, "high": 12.0, "example": "Merck/Verona $10B (COPD, first new MoA in 20 years)"}
+    },
+    "infectious_disease": {
+      "phase3":      {"low": 2.0, "mid": 5.0, "high": 10.0, "example": "Merck/Cidara $9.2B (CD388, DFC antifungal/antiviral)"}
+    },
+
+    "by_modality_premium": {
+      "_note": "Apply these modality premiums/discounts on top of TA ranges",
+      "adc":              "+10 to +30% vs. baseline (hot modality, manufacturing moat)",
+      "bispecific":       "+0 to +20% vs. baseline (validated class, established buyers)",
+      "car_t":            "+20 to +40% vs. baseline (cell therapy premium for high unmet need)",
+      "small_molecule":   "baseline",
+      "biologic_peptide": "baseline to +10%",
+      "gene_editing_rna": "+10 to +30% (platform premium; one-time dosing potential)",
+      "platform_deal":    "+50 to +200% on top (optionality across many assets)"
+    }
+  }
+}

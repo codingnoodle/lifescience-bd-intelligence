@@ -1,0 +1,193 @@
+<svg width="100%" viewBox="0 0 760 960" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>BD Decision Intelligence — LangGraph Multi-Agent Architecture</title>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<text x="380" y="22" text-anchor="middle" font-family="-apple-system, system-ui, Segoe UI, sans-serif" font-size="15" font-weight="600" fill="#1a1a18">BD Decision Intelligence — LangGraph Multi-Agent Architecture</text>
+
+<!-- ═══════════════════════════════════════════════════
+     USER WORKFLOW
+════════════════════════════════════════════════════ -->
+<text x="20" y="46" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#888885" letter-spacing="0.08em">USER WORKFLOW</text>
+
+<!-- FilterSidebar -->
+<rect x="20" y="54" width="190" height="72" rx="8" fill="#EFF6FF" stroke="#60A5FA" stroke-width="0.75"/>
+<text x="115" y="71" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#1E40AF">FilterSidebar</text>
+<text x="115" y="88" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3B82F6">Phase · Launch Year · TA</text>
+<text x="115" y="104" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" fill="#60A5FA">click chips → append to input</text>
+
+<!-- Arrow: FilterSidebar → ChatWindow -->
+<line x1="210" y1="90" x2="242" y2="90" stroke="#93C5FD" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ChatWindow -->
+<rect x="242" y="54" width="210" height="72" rx="8" fill="#EFF6FF" stroke="#60A5FA" stroke-width="0.75"/>
+<text x="347" y="71" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#1E40AF">ChatWindow</text>
+<text x="347" y="88" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3B82F6">asset name + indication</text>
+<text x="347" y="104" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" fill="#60A5FA">POST /analyze/stream → SSE events</text>
+
+<!-- Arrow: ChatWindow → ResultCard (SSE) -->
+<line x1="452" y1="90" x2="484" y2="90" stroke="#4ADE80" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="468" y="83" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="9.5" fill="#4ADE80">SSE</text>
+
+<!-- ResultCard -->
+<rect x="484" y="54" width="256" height="72" rx="8" fill="#F0FDF4" stroke="#4ADE80" stroke-width="0.75"/>
+<text x="612" y="71" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#166534">ResultCard</text>
+<text x="612" y="88" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#16A34A">GO / WATCH / NO-GO  ·  score</text>
+<text x="612" y="104" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" fill="#4ADE80">deal range · indication waterfall · summary</text>
+
+<!-- Arrow: ChatWindow → FastAPI (down) -->
+<line x1="347" y1="126" x2="347" y2="152" stroke="#73726C" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     FASTAPI / SSE TRANSPORT
+════════════════════════════════════════════════════ -->
+<rect x="150" y="152" width="460" height="46" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="380" y="170" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#444441">FastAPI  :8000  —  /analyze/stream</text>
+<text x="380" y="188" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#5F5E5A">BDState  { message · filters · indications[ ] }</text>
+
+<!-- Arrow: FastAPI → LangGraph -->
+<line x1="380" y1="198" x2="380" y2="224" stroke="#73726C" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     LANGGRAPH STATEGRAPH BORDER
+════════════════════════════════════════════════════ -->
+<rect x="12" y="224" width="736" height="618" rx="12" fill="none" stroke="#C8A96E" stroke-width="1.5" stroke-dasharray="8 4"/>
+<text x="380" y="242" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#854F0B" letter-spacing="0.06em">LANGGRAPH  STATEGRAPH ( BDState )</text>
+
+<!-- ═══════════════════════════════════════════════════
+     NODE 1 — RESEARCH PLANNER
+════════════════════════════════════════════════════ -->
+<rect x="190" y="252" width="380" height="62" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="380" y="273" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#3C3489">Research planner agent  ·  Haiku 4.5</text>
+<text x="380" y="292" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#534AB7">Parse free text · extract indications · look up PTRS table</text>
+
+<!-- Fork arrows: Planner → Science (left) + Market (right) -->
+<line x1="280" y1="314" x2="175" y2="364" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="480" y1="314" x2="585" y2="364" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     NODE 2 — SCIENCE AGENT  (left column, center=175)
+════════════════════════════════════════════════════ -->
+<rect x="40" y="364" width="270" height="62" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="175" y="385" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#3C3489">Science rigor agent  ·  Sonnet 4</text>
+<text x="175" y="404" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#534AB7">Clinical evidence · MOA · safety · biomarkers</text>
+
+<!-- Arrow down to science sub-tools -->
+<line x1="175" y1="426" x2="175" y2="444" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Science sub-tool 1 -->
+<rect x="52" y="444" width="246" height="30" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="175" y="459" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#534AB7">ClinicalTrials.gov · PubMed (Tavily)</text>
+
+<line x1="175" y1="474" x2="175" y2="490" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Science sub-tool 2 -->
+<rect x="52" y="490" width="246" height="30" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="175" y="505" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#534AB7">FDA · NEJM · Lancet (Tavily)</text>
+
+<line x1="175" y1="520" x2="175" y2="536" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Science sub-tool 3 -->
+<rect x="52" y="536" width="246" height="30" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="175" y="551" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#534AB7">PTRS table lookup (phase × TA)</text>
+
+<line x1="175" y1="566" x2="175" y2="582" stroke="#534AB7" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Science output box -->
+<rect x="52" y="582" width="246" height="44" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="175" y="599" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#444441">Science score  (0–10)</text>
+<text x="175" y="616" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#5F5E5A">science_rationale · per indication</text>
+
+<!-- Sequential dependency arrow: Science → Market (horizontal, shows data flows right) -->
+<line x1="298" y1="604" x2="446" y2="604" stroke="#534AB7" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text x="372" y="597" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="9" fill="#534AB7">feeds next agent</text>
+
+<!-- ═══════════════════════════════════════════════════
+     NODE 3 — MARKET AGENT  (right column, center=585)
+════════════════════════════════════════════════════ -->
+<rect x="450" y="364" width="270" height="62" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="585" y="385" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#085041">Market potential agent  ·  Sonnet 4</text>
+<text x="585" y="404" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#0F6E56">Market size · competition · pricing · timing</text>
+
+<!-- Arrow down to market sub-tools -->
+<line x1="585" y1="426" x2="585" y2="444" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Market sub-tool 1 -->
+<rect x="462" y="444" width="246" height="30" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="585" y="459" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#0F6E56">EvaluatePharma · BioPharma Dive (Tavily)</text>
+
+<line x1="585" y1="474" x2="585" y2="490" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Market sub-tool 2 -->
+<rect x="462" y="490" width="246" height="30" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="585" y="505" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#0F6E56">Competitive landscape · SEC filings (Tavily)</text>
+
+<line x1="585" y1="520" x2="585" y2="536" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Market sub-tool 3 -->
+<rect x="462" y="536" width="246" height="30" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="585" y="551" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#0F6E56">Launch year → PTRS × NPV discount</text>
+
+<line x1="585" y1="566" x2="585" y2="582" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- Market output box -->
+<rect x="462" y="582" width="246" height="44" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="585" y="599" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#444441">Market score  (0–10)</text>
+<text x="585" y="616" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#5F5E5A">peak_sales_bn  ·  PTRS-adj. peak sales</text>
+
+<!-- Converge arrows: Science + Market → Synthesizer -->
+<line x1="175" y1="626" x2="310" y2="678" stroke="#73726C" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="585" y1="626" x2="450" y2="678" stroke="#73726C" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     NODE 4 — SYNTHESIZER
+════════════════════════════════════════════════════ -->
+<rect x="180" y="678" width="400" height="62" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="380" y="699" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="500" fill="#633806">Synthesis agent (deal scorer)  ·  Sonnet 4</text>
+<text x="380" y="718" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#854F0B">60% science · 40% market · 2–4× PTRS-adj. peak sales → deal range</text>
+
+<!-- Arrow: Synthesizer → Decision -->
+<line x1="380" y1="740" x2="380" y2="766" stroke="#BA7517" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     DECISION OUTPUT
+════════════════════════════════════════════════════ -->
+<rect x="165" y="766" width="430" height="72" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="380" y="787" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="14" font-weight="500" fill="#712B13">Go / No-Go decision output</text>
+<text x="380" y="805" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#993C1D">composite score · deal range $B · indication waterfall</text>
+<text x="380" y="821" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#993C1D">≥ 6.5 → GO  ·  4.5–6.4 → WATCH  ·  &lt; 4.5 → NO-GO</text>
+<text x="380" y="828" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#C27A5A"> </text>
+
+<!-- SSE return arrow: Decision Output → ResultCard (curved path on right) -->
+<path d="M 595 802 Q 740 802 740 90 Q 740 68 742 68" fill="none" stroke="#4ADE80" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrow-green)"/>
+<text x="726" y="460" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#4ADE80" transform="rotate(-90 726 460)">SSE stream → browser</text>
+
+<!-- ═══════════════════════════════════════════════════
+     LEGEND
+════════════════════════════════════════════════════ -->
+<rect x="20" y="860" width="12" height="12" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="38" y="871" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3d3d3a">Science layer</text>
+
+<rect x="150" y="860" width="12" height="12" rx="2" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="168" y="871" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3d3d3a">Market layer</text>
+
+<rect x="280" y="860" width="12" height="12" rx="2" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+<text x="298" y="871" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3d3d3a">Synthesis layer</text>
+
+<rect x="410" y="860" width="12" height="12" rx="2" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="428" y="871" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3d3d3a">Decision output</text>
+
+<rect x="540" y="860" width="12" height="12" rx="2" fill="#EFF6FF" stroke="#60A5FA" stroke-width="0.5"/>
+<text x="558" y="871" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#3d3d3a">Frontend layer</text>
+
+<text x="20" y="896" font-family="-apple-system, system-ui, sans-serif" font-size="10.5" fill="#888885">Science → Market arrow (dashed) shows sequential dependency: science scores feed into market agent before synthesis.</text>
+</svg>
