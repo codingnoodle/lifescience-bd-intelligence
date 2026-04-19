@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Multi-Agent Systems for Domain-Specific Reasoning</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #1e1e1e;
+    --bg-slide:  #252526;
+    --bg-code:   #1a1a1a;
+    --fg:        #d4d4d4;
+    --fg-dim:    #808080;
+    --green:     #4ec9b0;
+    --green-dim: #2d7d6b;
+    --amber:     #ce9178;
+    --blue:      #569cd6;
+    --purple:    #c586c0;
+    --yellow:    #dcdcaa;
+    --comment:   #6a9955;
+    --border:    #333;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--fg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow: hidden; }
+
+  /* --- slide container --- */
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column; justify-content: center;
+    padding: 60px 80px;
+    background: var(--bg-slide);
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; }
+
+  /* --- typography --- */
+  h1 { font-size: 2.6rem; color: var(--green); margin-bottom: 0.3em; line-height: 1.15; }
+  h2 { font-size: 1.9rem; color: var(--green); margin-bottom: 0.5em; line-height: 1.2; }
+  h3 { font-size: 1.25rem; color: var(--green-dim); margin-bottom: 0.4em; font-weight: 600; }
+  p, li { font-size: 1.05rem; line-height: 1.65; color: var(--fg); }
+  .subtitle { font-size: 1.3rem; color: var(--fg-dim); margin-bottom: 0.6em; }
+  .small { font-size: 0.92rem; color: var(--fg-dim); }
+  .tag { display: inline-block; background: var(--green-dim); color: #fff; padding: 2px 10px; border-radius: 3px; font-size: 0.82rem; margin-right: 6px; }
+
+  ul { margin-left: 1.4em; margin-bottom: 0.6em; }
+  li { margin-bottom: 0.35em; }
+  li::marker { color: var(--green); }
+
+  strong { color: #fff; }
+  em { color: var(--amber); font-style: normal; }
+
+  blockquote {
+    border-left: 3px solid var(--green);
+    padding: 10px 18px;
+    margin: 14px 0;
+    background: rgba(78,201,176,0.06);
+    font-size: 1.05rem;
+    color: var(--fg);
+  }
+
+  /* --- code blocks --- */
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    tab-size: 4;
+  }
+  code, pre { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Courier New', monospace; }
+  code { font-size: 0.9em; }
+  .kw  { color: var(--blue); }
+  .fn  { color: var(--yellow); }
+  .str { color: var(--amber); }
+  .cm  { color: var(--comment); font-style: italic; }
+  .ty  { color: var(--green); }
+  .num { color: #b5cea8; }
+  .op  { color: var(--fg); }
+  .hl  { color: var(--purple); }
+
+  /* --- two-column layout --- */
+  .cols { display: flex; gap: 36px; align-items: flex-start; }
+  .cols > * { flex: 1; min-width: 0; }
+
+  /* --- progress bar --- */
+  .progress { position: fixed; bottom: 0; left: 0; height: 3px; background: var(--green); transition: width 0.3s; z-index: 100; }
+
+  /* --- slide counter --- */
+  .counter { position: fixed; bottom: 10px; right: 24px; font-size: 0.78rem; color: var(--fg-dim); z-index: 100; font-family: monospace; }
+
+  /* --- diagram box --- */
+  .diagram {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 22px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: var(--fg);
+  }
+
+  .title-slide { text-align: center; justify-content: center; }
+  .title-slide h1 { font-size: 2.8rem; margin-bottom: 0.15em; }
+  .title-slide .subtitle { font-size: 1.4rem; }
+
+  table { border-collapse: collapse; margin: 10px 0; width: 100%; font-size: 0.92rem; }
+  th { background: var(--bg-code); color: var(--green); text-align: left; padding: 8px 12px; border: 1px solid var(--border); font-weight: 600; }
+  td { padding: 7px 12px; border: 1px solid var(--border); }
+  tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ============================================================ SLIDE 1 -->
+<div class="slide title-slide active">
+  <h1>Building Multi-Agent Systems<br>for Domain-Specific Reasoning</h1>
+  <p class="subtitle">A pharma BD valuation case study</p>
+  <p class="small" style="margin-top: 1.2em;">
+    AI Workshop &middot; SCS 2026<br>
+    Architecture, prompt engineering, and lessons from production
+  </p>
+  <p class="small" style="margin-top: 2em; color: var(--fg-dim);">
+    <span class="tag">LangGraph</span>
+    <span class="tag">Claude / Bedrock</span>
+    <span class="tag">Multi-Agent</span>
+    <span class="tag">Pharma BD</span>
+  </p>
+</div>
+
+<!-- ============================================================ SLIDE 2 -->
+<div class="slide">
+  <h2>Why Multi-Agent?</h2>
+  <p class="subtitle">Single-prompt approaches fail for domain reasoning</p>
+  <div class="cols">
+    <div>
+      <h3>The problems with one-shot prompts</h3>
+      <ul>
+        <li><strong>Context window limits</strong> -- clinical data + market data + buyer data exceeds useful context for a single call</li>
+        <li><strong>Role confusion</strong> -- the model conflates "what is this drug" with "who should buy it" and produces muddled reasoning</li>
+        <li><strong>No separation of concerns</strong> -- a single prompt cannot enforce that science outputs feed into market inputs</li>
+        <li><strong>Math contamination</strong> -- LLMs hallucinate arithmetic when mixing reasoning with calculation</li>
+      </ul>
+    </div>
+    <div>
+      <h3>The multi-agent solution</h3>
+      <ul>
+        <li>Specialized agents with <strong>clear ownership boundaries</strong></li>
+        <li>Each agent owns a <strong>section of shared state</strong></li>
+        <li>Deterministic code handles <strong>all math</strong></li>
+        <li>Pipeline topology enforces <strong>data dependency order</strong></li>
+      </ul>
+      <blockquote>
+        "One agent, one concern, one section of state."
+      </blockquote>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 3 -->
+<div class="slide">
+  <h2>Architecture Overview</h2>
+  <p class="subtitle">Sequential pipeline -- not parallel -- because of data dependencies</p>
+  <div class="diagram"><span class="ty">                        BDState (TypedDict)</span>
+<span class="cm">                   shared state flows left-to-right</span>
+
+  <span class="kw">research_planner</span>  ------>  <span class="kw">science_agent</span>  ------>  <span class="kw">market_agent</span>  ------>  <span class="kw">synthesizer</span>  ------> <span class="ty">END</span>
+  <span class="cm">parse asset +         positioning,       comparator,         buyer mapping,</span>
+  <span class="cm">extract indications   de-risking,        differentiation,    bidding tension,</span>
+  <span class="cm">                      PTRS (in Python)   peak sales          deal pricing</span>
+
+  <span class="str">Why not parallel?</span>
+  <span class="cm">market_agent reads ptrs_adjusted written by science_agent</span>
+  <span class="cm">synthesizer reads differentiation_verdict + peak_sales from market_agent</span></div>
+  <pre><span class="cm"># backend/graph.py</span>
+<span class="kw">workflow</span> = <span class="ty">StateGraph</span>(<span class="ty">BDState</span>)
+<span class="kw">workflow</span>.<span class="fn">add_node</span>(<span class="str">"research_planner"</span>, research_planner_node)
+<span class="kw">workflow</span>.<span class="fn">add_node</span>(<span class="str">"science_agent"</span>,    science_agent_node)
+<span class="kw">workflow</span>.<span class="fn">add_node</span>(<span class="str">"market_agent"</span>,    market_agent_node)
+<span class="kw">workflow</span>.<span class="fn">add_node</span>(<span class="str">"synthesizer"</span>,     synthesizer_node)
+
+<span class="kw">workflow</span>.<span class="fn">set_entry_point</span>(<span class="str">"research_planner"</span>)
+<span class="kw">workflow</span>.<span class="fn">add_edge</span>(<span class="str">"research_planner"</span>, <span class="str">"science_agent"</span>)
+<span class="kw">workflow</span>.<span class="fn">add_edge</span>(<span class="str">"science_agent"</span>,    <span class="str">"market_agent"</span>)
+<span class="kw">workflow</span>.<span class="fn">add_edge</span>(<span class="str">"market_agent"</span>,    <span class="str">"synthesizer"</span>)
+<span class="kw">workflow</span>.<span class="fn">add_edge</span>(<span class="str">"synthesizer"</span>,     <span class="ty">END</span>)</pre>
+</div>
+
+<!-- ============================================================ SLIDE 4 -->
+<div class="slide">
+  <h2>Ownership Split Principle</h2>
+  <p class="subtitle">Each agent owns exactly one concern -- no overlap</p>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Agent</th><th>Owns</th><th>Rule</th></tr>
+        <tr><td><strong>Science</strong></td><td>Asset properties</td><td>MOA, clinical data, PTRS, regulatory signals</td></tr>
+        <tr><td><strong>Market</strong></td><td>Competitive environment</td><td>SOC comparator, differentiation, peak sales</td></tr>
+        <tr><td><strong>Synthesizer</strong></td><td>Buyer-side reasoning</td><td>Who buys, urgency, bidding, deal price</td></tr>
+      </table>
+      <blockquote style="margin-top: 18px;">
+        "If it is about the asset itself, science owns it.<br>
+        If it is about the market, market owns it.<br>
+        If it is about who buys it, synthesizer owns it."
+      </blockquote>
+    </div>
+    <div>
+      <h3>Why this matters</h3>
+      <ul>
+        <li>Each prompt stays <strong>focused</strong> -- shorter context, better reasoning</li>
+        <li>Agents cannot <strong>contradict each other</strong> within their domain</li>
+        <li><strong>Testable</strong>: you can unit-test science output independently of market</li>
+        <li><strong>Editable</strong>: swap the market agent without touching science or synthesis</li>
+      </ul>
+      <h3>Anti-pattern avoided</h3>
+      <ul>
+        <li>Science agent prompt explicitly says: <em>"Do NOT analyze market competition or buyers"</em></li>
+        <li>Market agent prompt says: <em>"Do NOT reason about potential buyers"</em></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 5 -->
+<div class="slide">
+  <h2>State Schema Design</h2>
+  <p class="subtitle">TypedDict with ~25 fields -- each agent writes its own section</p>
+  <div class="cols">
+    <div>
+      <pre><span class="cm"># backend/state.py</span>
+<span class="kw">class</span> <span class="ty">IndicationAnalysis</span>(<span class="ty">TypedDict</span>, total=<span class="kw">False</span>):
+    <span class="cm"># -- Set by research planner --</span>
+    name: <span class="ty">str</span>
+    phase: <span class="ty">str</span>
+    therapeutic_area: <span class="ty">str</span>
+    launch_year: <span class="ty">Optional</span>[<span class="ty">int</span>]
+
+    <span class="cm"># -- Science agent writes --</span>
+    positioning_profile: <span class="ty">Dict</span>[<span class="ty">str</span>, <span class="ty">Any</span>]
+    de_risking_signals: <span class="ty">List</span>[<span class="ty">str</span>]
+    ptrs_base: <span class="ty">float</span>
+    ptrs_adjusted: <span class="ty">float</span>
+    ptrs_breakdown: <span class="ty">List</span>[<span class="ty">Dict</span>]
+    science_score: <span class="ty">float</span>
+    science_rationale: <span class="ty">str</span>
+
+    <span class="cm"># -- Market agent writes --</span>
+    comparator: <span class="ty">Dict</span>[<span class="ty">str</span>, <span class="ty">Any</span>]
+    metric_comparison: <span class="ty">List</span>[<span class="ty">Dict</span>]
+    differentiation_verdict: <span class="ty">str</span>
+    peak_sales_standalone_bn: <span class="ty">float</span>
+    peak_sales_with_displacement_bn: <span class="ty">float</span>
+    market_score: <span class="ty">float</span>
+    comparator_confidence: <span class="ty">str</span>
+
+    <span class="cm"># -- Synthesizer computes --</span>
+    peak_sales_risk_adjusted_bn: <span class="ty">float</span>
+    peak_sales_if_succeed_bn: <span class="ty">float</span></pre>
+    </div>
+    <div>
+      <h3>LangGraph state propagation</h3>
+      <p>Each node returns a <code>dict</code> of updates that <strong>merge</strong> into shared state:</p>
+      <pre><span class="kw">def</span> <span class="fn">science_agent_node</span>(state: <span class="ty">BDState</span>) -> <span class="ty">Dict</span>:
+    enriched = <span class="fn">run_science_agent</span>(
+        state[<span class="str">"drug_asset_name"</span>],
+        state[<span class="str">"indications"</span>]
+    )
+    <span class="cm"># Return ONLY the keys this agent owns</span>
+    <span class="kw">return</span> {<span class="str">"indications"</span>: enriched}</pre>
+      <h3>Key design decisions</h3>
+      <ul>
+        <li><code>total=False</code> -- fields are optional, populated incrementally</li>
+        <li>Each agent <strong>reads</strong> fields from prior agents, <strong>writes</strong> only its own</li>
+        <li>Top-level <code>BDState</code> holds cross-agent outputs: <code>buyers</code>, <code>bidding_tension</code>, three <code>scenario_*</code> dicts</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 6 -->
+<div class="slide">
+  <h2>Agent 1: Science Agent</h2>
+  <p class="subtitle">Fixed vocabulary extraction + deterministic PTRS computation</p>
+  <div class="cols">
+    <div>
+      <h3>Prompt structure</h3>
+      <pre><span class="str">"""You are a senior biotech scientist
+conducting pharma BD due diligence."""</span>
+
+<span class="cm"># 1. Asset context from Tavily searches</span>
+<span class="cm"># 2. Indication list with phase + TA</span>
+<span class="cm"># 3. Fixed signal vocabulary (9 signals)</span>
+<span class="cm"># 4. JSON schema with examples</span>
+<span class="cm"># 5. Science score rubric (0-10 scale)</span>
+
+<span class="str">DE-RISKING SIGNAL VOCABULARY</span>
+<span class="str">-- use ONLY these exact strings:</span>
+  orphan_drug
+  fast_track
+  breakthrough_designation
+  patients_dosed_50plus
+  patients_dosed_100plus
+  best_in_class_efficacy
+  fda_registrational_alignment
+  biomarker_defined_population
+  platform_multi_indication</pre>
+    </div>
+    <div>
+      <h3>The critical pattern</h3>
+      <p>The LLM <strong>identifies signals</strong>. Python <strong>computes PTRS</strong>.</p>
+      <pre><span class="cm"># LLM outputs signal names from vocabulary</span>
+signals = [s <span class="kw">for</span> s <span class="kw">in</span> result[<span class="str">"de_risking_signals"</span>]
+           <span class="kw">if</span> s <span class="kw">in</span> <span class="ty">VALID_DERISKING_SIGNALS</span>]
+
+<span class="cm"># Python does the math -- never the LLM</span>
+ptrs_result = <span class="fn">get_adjusted_ptrs</span>(
+    phase, therapeutic_area, signals
+)
+
+<span class="cm"># Result: {base: 0.25, adjusted: 0.40,</span>
+<span class="cm">#   breakdown: [{signal, contribution}, ...]}</span></pre>
+      <blockquote>
+        "Never let the LLM do arithmetic -- compute in code, explain in prompts."
+      </blockquote>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 7 -->
+<div class="slide">
+  <h2>PTRS De-Risking System</h2>
+  <p class="subtitle">Additive adjustments with phase caps -- deterministic, tunable</p>
+  <div class="cols">
+    <div>
+      <h3>Adjustment table</h3>
+      <table>
+        <tr><th>Signal</th><th>Adj</th></tr>
+        <tr><td>orphan_drug</td><td>+0.02</td></tr>
+        <tr><td>fast_track</td><td>+0.03</td></tr>
+        <tr><td>breakthrough_designation</td><td>+0.05</td></tr>
+        <tr><td>patients_dosed_50plus</td><td>+0.03</td></tr>
+        <tr><td>patients_dosed_100plus</td><td>+0.05</td></tr>
+        <tr><td>best_in_class_efficacy</td><td>+0.07</td></tr>
+        <tr><td>fda_registrational_alignment</td><td>+0.04</td></tr>
+        <tr><td>biomarker_defined_population</td><td>+0.03</td></tr>
+        <tr><td>platform_multi_indication</td><td>+0.02</td></tr>
+      </table>
+      <h3 style="margin-top: 12px;">Phase caps</h3>
+      <table>
+        <tr><th>Phase</th><th>Cap</th></tr>
+        <tr><td>Preclinical</td><td>0.20</td></tr>
+        <tr><td>Phase 1</td><td>0.45</td></tr>
+        <tr><td>Phase 1/2</td><td>0.55</td></tr>
+        <tr><td>Phase 2</td><td>0.65</td></tr>
+        <tr><td>Phase 3</td><td>0.85</td></tr>
+        <tr><td>NDA/BLA</td><td>0.95</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Implementation</h3>
+      <pre><span class="cm"># backend/utils/ptrs_lookup.py</span>
+<span class="kw">def</span> <span class="fn">get_adjusted_ptrs</span>(phase, ta, signals):
+    base = <span class="fn">lookup_ptrs</span>(phase, ta)  <span class="cm"># from JSON table</span>
+
+    <span class="cm"># 50plus and 100plus are mutually exclusive</span>
+    has_100 = <span class="str">"patients_dosed_100plus"</span> <span class="kw">in</span> signals
+
+    total_adj = <span class="num">0.0</span>
+    breakdown = []
+    <span class="kw">for</span> signal <span class="kw">in</span> signals:
+        <span class="kw">if</span> signal == <span class="str">"patients_dosed_50plus"</span> \
+           <span class="kw">and</span> has_100:
+            <span class="kw">continue</span>  <span class="cm"># skip lower tier</span>
+        contrib = _DERISKING_ADJUSTMENTS[signal]
+        breakdown.<span class="fn">append</span>({
+            <span class="str">"signal"</span>: signal,
+            <span class="str">"contribution"</span>: contrib
+        })
+        total_adj += contrib
+
+    adjusted = <span class="fn">min</span>(base + total_adj, _PTRS_CAPS[phase])
+    <span class="kw">return</span> {<span class="str">"base"</span>: base,
+            <span class="str">"adjusted"</span>: adjusted,
+            <span class="str">"breakdown"</span>: breakdown}</pre>
+      <h3>Design decision: additive not multiplicative</h3>
+      <ul>
+        <li>Easier to reason about: each signal adds a <strong>fixed percentage</strong></li>
+        <li>Easier to tune: domain experts adjust one number per signal</li>
+        <li>Phase caps prevent runaway PTRS (no Phase 1 asset at 80%)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 8 -->
+<div class="slide">
+  <h2>Agent 2: Market Agent</h2>
+  <p class="subtitle">Comparator discovery -- search for SOC, not for the asset</p>
+  <div class="cols">
+    <div>
+      <h3>Key design: search strategy</h3>
+      <pre><span class="cm"># Search for the DISEASE standard of care,</span>
+<span class="cm"># not the asset itself</span>
+soc_data = <span class="fn">tavily_search</span>(
+    <span class="str">"standard of care {indications} "</span>
+    <span class="str">"{therapeutic_areas} approved drugs "</span>
+    <span class="str">"treatment guidelines"</span>
+)
+
+<span class="cm"># Separate search for market sizing</span>
+market_data = <span class="fn">tavily_search</span>(
+    <span class="str">"{asset} {indications} market size "</span>
+    <span class="str">"peak sales revenue forecast"</span>
+)</pre>
+      <h3>Five differentiation verdicts</h3>
+      <table>
+        <tr><th>Verdict</th><th>Displacement</th></tr>
+        <tr><td>best_in_class</td><td>40-60% SOC capture</td></tr>
+        <tr><td>better_in_class</td><td>20-40% SOC capture</td></tr>
+        <tr><td>me_too</td><td>Own population only</td></tr>
+        <tr><td>worse_in_class</td><td>5-10% salvage niche</td></tr>
+        <tr><td>new_class_creation</td><td>Category expansion</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Metric comparison table output</h3>
+      <pre><span class="cm">// LLM returns structured comparison</span>
+{
+  <span class="str">"metric_comparison"</span>: [
+    {
+      <span class="str">"metric"</span>: <span class="str">"MMR rate at 12 months"</span>,
+      <span class="str">"asset_value"</span>: <span class="str">"74%"</span>,
+      <span class="str">"comparator_value"</span>: <span class="str">"25%"</span>,
+      <span class="str">"direction"</span>: <span class="str">"better"</span>
+    },
+    {
+      <span class="str">"metric"</span>: <span class="str">"Grade 3+ AE rate"</span>,
+      <span class="str">"asset_value"</span>: <span class="str">"18%"</span>,
+      <span class="str">"comparator_value"</span>: <span class="str">"22%"</span>,
+      <span class="str">"direction"</span>: <span class="str">"better"</span>
+    }
+  ],
+  <span class="str">"differentiation_verdict"</span>: <span class="str">"best_in_class"</span>
+}</pre>
+      <blockquote>
+        "The verdict determines which valuation path fires -- best_in_class triggers displacement math, me_too stays standalone."
+      </blockquote>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 9 -->
+<div class="slide">
+  <h2>The new_class_creation Verdict</h2>
+  <p class="subtitle">Special case -- when SOC is symptom-only and the asset is disease-modifying</p>
+  <div class="cols">
+    <div>
+      <h3>When does it trigger?</h3>
+      <ul>
+        <li>Current SOC addresses <strong>symptoms</strong> rather than underlying pathology</li>
+        <li>Analyst / KOL language includes <em>"first-in-class"</em>, <em>"disease-modifying"</em>, <em>"new standard of care"</em></li>
+        <li>The asset targets a pathway where <strong>no approved drug exists</strong></li>
+      </ul>
+      <h3>Category expansion math</h3>
+      <pre><span class="cm"># Instead of displacement from existing SOC:</span>
+value = (ta_category_sales
+         * expansion_multiplier  <span class="cm"># 1.5-2.0x</span>
+         * <span class="num">0.35</span>)  <span class="cm"># capture rate</span>
+
+<span class="cm"># Rubric from the market prompt:</span>
+<span class="cm"># conservative: 1.5x expansion</span>
+<span class="cm"># base case:    2.0x expansion</span>
+<span class="cm"># capture rate: 35% of expanded category</span></pre>
+    </div>
+    <div>
+      <h3>Example: narcolepsy (Centessa / Xywav)</h3>
+      <ul>
+        <li>Current SOC (Xywav): manages symptoms -- sodium oxybate for cataplexy and EDS</li>
+        <li>If a new asset is <strong>orexin receptor agonist</strong> (addresses underlying orexin deficiency), it is <em>disease-modifying</em></li>
+        <li>Cannot size on Xywav displacement alone -- the market <strong>expands</strong> because a true treatment brings in patients who refused symptom management</li>
+      </ul>
+      <blockquote>
+        "You cannot size a disease-modifying drug by displacement from a symptom-management SOC. The market category itself grows."
+      </blockquote>
+      <h3>Surfaced as</h3>
+      <p>"Category creation scenario" -- distinct from displacement, communicated separately in the three-scenario output.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 10 -->
+<div class="slide">
+  <h2>Agent 3: Synthesizer</h2>
+  <p class="subtitle">Buyer mapping, bidding tension, deal pricing</p>
+  <div class="cols">
+    <div>
+      <h3>Three concerns</h3>
+      <ul>
+        <li><strong>Buyer mapping</strong> -- franchise fit + patent cliff urgency + deal velocity + defensive buyers</li>
+        <li><strong>Bidding tension</strong> -- 4-signal score (analyst coverage, stock movement, capable buyers, TA velocity)</li>
+        <li><strong>Deal pricing</strong> -- three scenarios with dual risk/if-succeed values</li>
+      </ul>
+      <h3>Hardcoded buyer context</h3>
+      <pre><span class="cm"># backend/utils/buyer_context.py</span>
+<span class="ty">BUYER_PATENT_CLIFFS</span> = {
+    <span class="str">"Merck"</span>: {
+        <span class="str">"loe_drug"</span>: <span class="str">"Keytruda"</span>,
+        <span class="str">"loe_year"</span>: <span class="num">2028</span>,
+        <span class="str">"urgency"</span>: <span class="num">1.5</span>,  <span class="cm"># highest</span>
+    },
+    <span class="str">"BMS"</span>:   {<span class="str">"urgency"</span>: <span class="num">1.3</span>},
+    <span class="str">"Pfizer"</span>: {<span class="str">"urgency"</span>: <span class="num">1.2</span>},
+    <span class="cm"># ... 12 buyers total</span>
+}
+<span class="ty">FLUSH_BUYERS</span> = {
+    <span class="str">"Eli Lilly"</span>: {<span class="str">"urgency"</span>: <span class="num">1.3</span>},
+    <span class="str">"Novo Nordisk"</span>: {<span class="str">"urgency"</span>: <span class="num">1.25</span>},
+}</pre>
+    </div>
+    <div>
+      <h3>What is hardcoded vs searched</h3>
+      <table>
+        <tr><th>Hardcoded (slow-changing)</th><th>Tavily search (fast-changing)</th></tr>
+        <tr><td>Patent cliff dates</td><td>Recent M&A deal velocity</td></tr>
+        <tr><td>Base urgency multipliers</td><td>Analyst sentiment / coverage</td></tr>
+        <tr><td>Flush capital status</td><td>Stock price movements</td></tr>
+        <tr><td>TA franchise mapping</td><td>TA deal flow last 12 months</td></tr>
+      </table>
+      <blockquote style="margin-top: 16px;">
+        "Hardcode what is slow-changing, search for what is fast-changing."
+      </blockquote>
+      <h3>Defensive buyer detection</h3>
+      <p>If a company's drug <strong>IS the SOC comparator</strong> identified by the market agent, they are flagged as a defensive buyer -- they may pay a premium to prevent disruption.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 11 -->
+<div class="slide">
+  <h2>Deal Multiple Approach</h2>
+  <p class="subtitle">Why NPV formulas fail for pharma M&A</p>
+  <div class="cols">
+    <div>
+      <h3>The PTRS-over-discounting problem</h3>
+      <ul>
+        <li>Standard DCF: discount future cash flows by risk rate</li>
+        <li>In pharma: PTRS <strong>already</strong> captures binary approval risk</li>
+        <li>Applying both PTRS and a high discount rate <strong>double-penalizes</strong> the asset</li>
+        <li>Result: DCF consistently undervalues early-stage assets vs actual deal prices</li>
+      </ul>
+      <h3>Solution: deal multiples</h3>
+      <pre><span class="fn">deal_multiple</span> =
+    <span class="fn">base</span>(phase)
+  + urgency_adj
+  + bidding_adj
+  + differentiation_adj
+
+<span class="cm"># Strategic value:</span>
+if_success = peak_displacement * deal_multiple
+risk_adj   = if_success * weighted_avg_ptrs</pre>
+    </div>
+    <div>
+      <h3>Base multiple by phase</h3>
+      <table>
+        <tr><th>Phase</th><th>Multiple</th></tr>
+        <tr><td>Preclinical</td><td>0.5 - 1.0x</td></tr>
+        <tr><td>Phase 1</td><td>1.0 - 1.5x</td></tr>
+        <tr><td>Phase 1/2</td><td>1.5 - 2.5x</td></tr>
+        <tr><td>Phase 2</td><td>2.0 - 3.5x</td></tr>
+        <tr><td>Phase 3</td><td>3.0 - 5.0x</td></tr>
+        <tr><td>Marketed</td><td>4.0 - 8.0x</td></tr>
+      </table>
+      <h3>Adjustments</h3>
+      <table>
+        <tr><th>Condition</th><th>Adj</th></tr>
+        <tr><td>Top buyer urgency &gt;= 1.3</td><td>+0.3x</td></tr>
+        <tr><td>Top buyer urgency &gt;= 1.5</td><td>+0.5x</td></tr>
+        <tr><td>Bidding tension &gt;= 0.6</td><td>+0.3x</td></tr>
+        <tr><td>best_in_class / new_class</td><td>+0.3x</td></tr>
+        <tr><td>me_too / worse_in_class</td><td>-0.5x</td></tr>
+      </table>
+      <blockquote style="margin-top: 10px;">"Real BD bankers use multiples, not DCF."</blockquote>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 12 -->
+<div class="slide">
+  <h2>Dual-View Design Pattern</h2>
+  <p class="subtitle">Risk-adjusted vs if-succeed -- always show both</p>
+  <div class="cols">
+    <div>
+      <h3>Why two values?</h3>
+      <ul>
+        <li><strong>Risk-adjusted</strong> (PTRS applied): for investment committee decisioning -- "what is the expected value?"</li>
+        <li><strong>If-succeed</strong> (assumes approval): for negotiation ceilings -- "what is the max we would pay?"</li>
+        <li><strong>The gap IS the risk</strong>: a GP sees at a glance how much value depends on clinical success</li>
+      </ul>
+      <h3>Example output</h3>
+      <table>
+        <tr><th>Scenario</th><th>If-Succeed</th><th>Risk-Adj</th></tr>
+        <tr><td>Standalone</td><td>$2.0B</td><td>$0.6B</td></tr>
+        <tr><td>Displacement</td><td>$8.7B</td><td>$2.6B</td></tr>
+        <tr><td>Strategic</td><td>$7.0B</td><td>$2.1B</td></tr>
+      </table>
+      <p class="small" style="margin-top: 8px;">The 3x gap in strategic scenario signals high clinical risk (Phase 1/2, PTRS ~30%).</p>
+    </div>
+    <div>
+      <h3>Computed in parallel per indication</h3>
+      <pre><span class="cm"># backend/agents/synthesizer.py</span>
+<span class="cm"># Pre-compute dual values before LLM call</span>
+<span class="kw">for</span> ind <span class="kw">in</span> indications:
+    ly  = ind.get(<span class="str">"launch_year"</span>)
+    npv = <span class="fn">_npv_discount</span>(ly)
+    ptrs = ind.get(<span class="str">"ptrs_adjusted"</span>, <span class="num">0.25</span>)
+    peak = ind[<span class="str">"peak_sales_with_displacement_bn"</span>]
+
+    <span class="cm"># If-succeed: no PTRS applied</span>
+    ind[<span class="str">"peak_sales_if_succeed_bn"</span>] = \
+        <span class="fn">round</span>(peak * npv, <span class="num">2</span>)
+
+    <span class="cm"># Risk-adjusted: PTRS applied</span>
+    ind[<span class="str">"peak_sales_risk_adjusted_bn"</span>] = \
+        <span class="fn">round</span>(peak * ptrs * npv, <span class="num">2</span>)</pre>
+      <blockquote style="margin-top: 14px;">
+        "Dual-view is more useful than a single estimate. Optimistic and pessimistic bounds bracket the negotiation."
+      </blockquote>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 13 -->
+<div class="slide">
+  <h2>Anti-Anchoring in Prompts</h2>
+  <p class="subtitle">The problem with injecting conclusions into prompts</p>
+  <div class="cols">
+    <div>
+      <h3>The anchoring problem</h3>
+      <ul>
+        <li>If you inject <em>"$2B-$4.5B"</em> into a prompt, the LLM will output a number within that range -- <strong>regardless of the actual evidence</strong></li>
+        <li>This is cognitive anchoring, amplified by LLM sycophancy</li>
+        <li>Earlier versions of this system passed pre-computed deal ranges into the synthesizer and got suspiciously "reasonable" outputs</li>
+      </ul>
+      <h3>What went wrong</h3>
+      <pre><span class="cm"># BAD: anchoring the LLM</span>
+prompt = <span class="str">f"""Comparable deals suggest a</span>
+<span class="str">range of $2B-$4.5B for this asset.</span>
+<span class="str">What is your valuation?"""</span>
+<span class="cm"># LLM: "$3.2B" -- always in range</span></pre>
+    </div>
+    <div>
+      <h3>The solution</h3>
+      <pre><span class="cm"># GOOD: provide facts, not conclusions</span>
+<span class="str">"""Comparable transactions:</span>
+<span class="str">  [M&A] Merck / AssetX</span>
+<span class="str">    TA: oncology | Phase: 2</span>
+<span class="str">    Deal: $1.8B upfront ($3.2B total)</span>
+<span class="str">  [M&A] Pfizer / AssetY</span>
+<span class="str">    TA: oncology | Phase: 3</span>
+<span class="str">    Deal: $5.1B upfront</span>
+
+<span class="str">Assess how similar/different the</span>
+<span class="str">current asset is to each comp,</span>
+<span class="str">then derive your own estimate --</span>
+<span class="str">do NOT simply copy a comp's value."""</span></pre>
+      <blockquote>
+        "Provide data, not conclusions. Let the model reason from facts."
+      </blockquote>
+      <h3>Implementation</h3>
+      <p><code>deal_benchmarks.py</code> returns <strong>raw deal records</strong> -- no pre-computed ranges, no averages, no suggested bands.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 14 -->
+<div class="slide">
+  <h2>Prompt Engineering Patterns</h2>
+  <p class="subtitle">Five patterns used across the agent system</p>
+  <div class="cols">
+    <div>
+      <h3>1. Fixed vocabulary for structured extraction</h3>
+      <pre><span class="str">"DE-RISKING SIGNAL VOCABULARY --</span>
+<span class="str"> use ONLY these exact strings:"</span>
+  orphan_drug, fast_track, ...
+<span class="cm"># LLM picks from the list, code validates</span></pre>
+
+      <h3>2. JSON schema in prompt with examples</h3>
+      <pre><span class="str">"Return ONLY valid JSON (no markdown):"</span>
+{
+  <span class="str">"indications"</span>: [{
+    <span class="str">"name"</span>: <span class="str">"exact indication name"</span>,
+    <span class="str">"science_score"</span>: <span class="num">8.0</span>,
+    ...
+  }]
+}</pre>
+
+      <h3>3. Strict rubric with exact thresholds</h3>
+      <pre><span class="cm"># Differentiation verdicts</span>
+<span class="str">"best_in_class: 2+ efficacy metrics</span>
+<span class="str"> meaningfully better, no key worse"</span>
+<span class="str">"better_in_class: 1 metric better,</span>
+<span class="str"> none worse"</span></pre>
+    </div>
+    <div>
+      <h3>4. Separation: LLM reasons, code computes</h3>
+      <table>
+        <tr><th>LLM does</th><th>Code does</th></tr>
+        <tr><td>Identify de-risking signals</td><td>Compute PTRS score</td></tr>
+        <tr><td>Assess differentiation verdict</td><td>Select displacement %</td></tr>
+        <tr><td>Map buyer franchise fit</td><td>Look up urgency multipliers</td></tr>
+        <tr><td>Reason about comparators</td><td>NPV discount arithmetic</td></tr>
+      </table>
+
+      <h3 style="margin-top: 16px;">5. Parameters, not free-form</h3>
+      <pre><span class="cm"># revenue_multiplier as prompt parameter</span>
+<span class="str">"revenue_multiplier = 4.0 for standard"</span>
+<span class="str">"revenue_multiplier = 5.0 for orphan"</span>
+<span class="str">"revenue_multiplier = 3.0 for competitive"</span>
+
+<span class="cm"># deal_multiple formula in prompt</span>
+<span class="str">"deal_multiple = base(phase)</span>
+<span class="str">  + urgency_adj + bidding_adj"</span></pre>
+      <p class="small">The LLM selects from defined options -- it does not invent its own multipliers.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 15 -->
+<div class="slide">
+  <h2>Validation Methodology</h2>
+  <p class="subtitle">Blind test against real deals -- the system must discover, not memorize</p>
+  <div class="cols">
+    <div>
+      <h3>Blind test protocol</h3>
+      <ul>
+        <li>Feed the system <strong>only the asset name</strong></li>
+        <li>No hardcoded comparators, no deal price hints</li>
+        <li>System must <strong>discover</strong> the SOC, classify differentiation, identify buyers, and price the deal</li>
+        <li>Compare output to <strong>actual announced deal price</strong></li>
+      </ul>
+      <h3>Pass criterion</h3>
+      <blockquote>
+        Strategic scenario (if-succeed) within 20-30% of actual deal price.
+      </blockquote>
+      <h3>Why if-succeed for comparison?</h3>
+      <p>Announced deal prices are the <strong>buyer's if-succeed bet</strong> -- they already applied their own risk framework internally.</p>
+    </div>
+    <div>
+      <h3>Example: TERN-701 (Terns Pharma)</h3>
+      <pre><span class="cm"># Test input: just the asset name</span>
+<span class="str">"Analyze TERN-701 by Terns Pharma"</span>
+
+<span class="cm"># System output (discovered, not hardcoded):</span>
+SOC comparator: <span class="ty">Scemblix</span> (asciminib)
+  <span class="cm">-- found via Tavily SOC search</span>
+Verdict: <span class="ty">best_in_class</span>
+  <span class="cm">-- 2+ efficacy metrics better</span>
+Top buyer: <span class="ty">Merck</span>
+  <span class="cm">-- Keytruda LOE 2028, oncology fit</span>
+Defensive buyer: <span class="ty">Novartis</span>
+  <span class="cm">-- owns Scemblix, the SOC comparator</span>
+
+Strategic if-succeed: <span class="num">$X.XB</span>
+Actual deal price:    <span class="num">$X.XB</span>
+<span class="cm">-- within target range</span></pre>
+      <h3>What this validates</h3>
+      <ul>
+        <li>SOC discovery via search (not lookup tables)</li>
+        <li>Differentiation rubric produces correct verdicts</li>
+        <li>Buyer mapping surfaces real acquirers</li>
+        <li>Deal multiple approach tracks actual prices</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 16 -->
+<div class="slide">
+  <h2>LangGraph Patterns</h2>
+  <p class="subtitle">StateGraph, sequential edges, streaming, and mid-pipeline re-entry</p>
+  <div class="cols">
+    <div>
+      <h3>StateGraph with TypedDict</h3>
+      <pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> <span class="ty">StateGraph</span>, <span class="ty">END</span>
+
+<span class="kw">class</span> <span class="ty">BDState</span>(<span class="ty">TypedDict</span>, total=<span class="kw">False</span>):
+    message: <span class="ty">str</span>
+    drug_asset_name: <span class="ty">str</span>
+    indications: <span class="ty">List</span>[<span class="ty">IndicationAnalysis</span>]
+    buyers: <span class="ty">Optional</span>[<span class="ty">List</span>[<span class="ty">Dict</span>]]
+    <span class="cm"># ... 20+ fields total</span>
+
+workflow = <span class="ty">StateGraph</span>(<span class="ty">BDState</span>)
+bd_graph = workflow.<span class="fn">compile</span>()</pre>
+
+      <h3>Stream mode for SSE progress</h3>
+      <pre><span class="cm"># Each node completion emits an event</span>
+<span class="kw">async for</span> event <span class="kw">in</span> bd_graph.<span class="fn">astream</span>(
+    {<span class="str">"message"</span>: user_query},
+    stream_mode=<span class="str">"updates"</span>
+):
+    <span class="cm"># event = {node_name: {state_updates}}</span>
+    <span class="kw">yield</span> <span class="fn">sse_event</span>(event)</pre>
+    </div>
+    <div>
+      <h3>The recalculate endpoint</h3>
+      <p>Re-enter the graph <strong>mid-pipeline</strong> with user overrides:</p>
+      <pre><span class="cm"># User adjusts PTRS or peak sales manually</span>
+<span class="cm"># Re-run from synthesizer only</span>
+
+<span class="cm"># 1. Take existing state snapshot</span>
+state = last_run_state.<span class="fn">copy</span>()
+
+<span class="cm"># 2. Apply user overrides</span>
+state[<span class="str">"indications"</span>][<span class="num">0</span>][<span class="str">"ptrs_adjusted"</span>] = <span class="num">0.45</span>
+
+<span class="cm"># 3. Re-enter at synthesizer node</span>
+result = <span class="fn">synthesizer_node</span>(state)</pre>
+
+      <h3>Pattern benefits</h3>
+      <ul>
+        <li><strong>Incremental feedback</strong>: frontend shows progress per agent</li>
+        <li><strong>Partial re-run</strong>: change one assumption, re-price without re-running science + market</li>
+        <li><strong>Debuggability</strong>: inspect state after each node</li>
+        <li><strong>Trust but verify</strong>: every assumption is editable by the user</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 17 -->
+<div class="slide">
+  <h2>Lessons Learned</h2>
+  <p class="subtitle">Five principles from building a production multi-agent system</p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 10px;">
+    <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 20px;">
+      <h3>1. Domain experts define the rubric</h3>
+      <p>The differentiation verdicts, de-risking signals, and deal multiple tables came from BD professionals -- not from asking the LLM to invent criteria. The model <strong>applies</strong> the rubric; it does not <strong>create</strong> it.</p>
+    </div>
+    <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 20px;">
+      <h3>2. Hardcode slow, search fast</h3>
+      <p>Patent cliff dates change quarterly. Deal velocity changes weekly. <strong>Hardcode the former, Tavily-search the latter.</strong> The buyer_context.py file is updated once per quarter; deal sentiment is searched live every run.</p>
+    </div>
+    <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 20px;">
+      <h3>3. Never let LLMs do math</h3>
+      <p>PTRS computation, NPV discounting, deal multiple arithmetic -- all in Python. The LLM identifies <em>which signals apply</em> and <em>which verdict fits</em>. Code turns those into numbers. Errors dropped to near-zero after this split.</p>
+    </div>
+    <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 20px;">
+      <h3>4. Dual-view beats single estimate</h3>
+      <p>Risk-adjusted for IC decisioning, if-succeed for negotiation ceilings. <strong>The gap IS the risk visualization.</strong> A 3x gap signals high clinical risk without needing a paragraph of explanation.</p>
+    </div>
+    <div style="background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 20px; grid-column: 1 / -1;">
+      <h3>5. Every assumption should be editable</h3>
+      <p>The recalculate endpoint lets users override PTRS, peak sales, urgency multipliers, or differentiation verdicts and re-run the synthesizer in seconds. Trust the system's defaults, but verify by adjusting. <strong>"Trust but verify"</strong> is the only way domain experts adopt AI tools.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ SLIDE 18 -->
+<div class="slide title-slide">
+  <h1 style="font-size: 2.4rem;">Q&A</h1>
+  <p class="subtitle" style="margin-top: 0.8em;">Resources and references</p>
+  <div style="text-align: left; max-width: 600px; margin: 2em auto 0;">
+    <table>
+      <tr><td style="color: var(--green); width: 160px;">Repository</td><td><code>sapa-26-scs-ai-workshop/bd-intelligence/</code></td></tr>
+      <tr><td style="color: var(--green);">Agent logic docs</td><td><code>docs/agent_logic.md</code></td></tr>
+      <tr><td style="color: var(--green);">State schema</td><td><code>backend/state.py</code></td></tr>
+      <tr><td style="color: var(--green);">Graph definition</td><td><code>backend/graph.py</code></td></tr>
+      <tr><td style="color: var(--green);">PTRS system</td><td><code>backend/utils/ptrs_lookup.py</code></td></tr>
+      <tr><td style="color: var(--green);">Buyer context</td><td><code>backend/utils/buyer_context.py</code></td></tr>
+      <tr><td style="color: var(--green);">LangGraph docs</td><td><code>langchain-ai.github.io/langgraph/</code></td></tr>
+    </table>
+  </div>
+  <p class="small" style="margin-top: 2.5em; color: var(--fg-dim);">
+    AI Workshop &middot; SCS 2026
+  </p>
+</div>
+
+</div><!-- /deck -->
+
+<!-- progress bar and counter -->
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function show(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); show(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); show(0); }
+    if (e.key === 'End')  { e.preventDefault(); show(total - 1); }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.clientX > window.innerWidth / 2) show(current + 1);
+    else show(current - 1);
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', function(e) {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) { diff < 0 ? show(current + 1) : show(current - 1); }
+  });
+
+  show(0);
+})();
+</script>
+
+</body>
+</html>
