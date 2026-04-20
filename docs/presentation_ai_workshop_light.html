@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic AI Workshop | SAPA SCS AI Workshop</title>
+<title>Agentic AI Workshop | SAPA SCS AI Workshop (Light)</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:         #0a1628;
-    --bg-slide:   #0d1b2a;
-    --bg-card:    #1b2838;
-    --bg-card-alt:#162232;
-    --fg:         #e0e6ed;
-    --fg-dim:     #7a8a9e;
-    --fg-bright:  #ffffff;
-    --accent:     #2dd4bf;
-    --accent-dim: #1a8a7a;
-    --accent-glow:#2dd4bf22;
-    --warm:       #f59e0b;
-    --coral:      #f87171;
-    --blue:       #60a5fa;
-    --border:     #1e3a5f;
+    --bg:         #ffffff;
+    --bg-slide:   #f8f9fb;
+    --bg-card:    #f0f2f5;
+    --bg-card-alt:#e8eaed;
+    --fg:         #374151;
+    --fg-dim:     #6b7280;
+    --fg-bright:  #111827;
+    --accent:     #4d7c5e;
+    --accent-dim: #3d6b4e;
+    --accent-glow:#4d7c5e15;
+    --warm:       #d97706;
+    --coral:      #dc2626;
+    --blue:       #2563eb;
+    --border:     #e5e7eb;
     --slide-w:    1280px;
     --slide-h:    720px;
   }
@@ -53,19 +53,19 @@
   }
   #slide-counter {
     position: fixed; bottom: 20px; right: 32px;
-    font-size: 0.85rem; color: var(--fg-dim);
+    font-size: 0.85rem; color: #9ca3af;
     font-variant-numeric: tabular-nums; z-index: 100;
   }
 
   /* ---------- typography ---------- */
   h1 { font-size: 2.2rem; color: var(--fg-bright); margin-bottom: 0.2em; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
-  h2 { font-size: 1.6rem; color: var(--fg-bright); margin-bottom: 0.15em; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
-  h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.35em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  h2 { font-size: 1.6rem; color: #111827; margin-bottom: 0.15em; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 0.9rem; color: #4d7c5e; margin-bottom: 0.35em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
   p, li { font-size: 0.92rem; line-height: 1.6; color: var(--fg); }
   .subtitle { font-size: 1.05rem; color: var(--fg-dim); margin-bottom: 0.4em; font-weight: 400; }
-  .section-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.5em; }
+  .section-label { font-size: 0.75rem; color: #4d7c5e; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.5em; }
   .small { font-size: 0.8rem; color: var(--fg-dim); }
-  .meta { font-size: 0.9rem; color: var(--fg-dim); margin-top: 1em; }
+  .meta { font-size: 0.9rem; color: #6b7280; margin-top: 1em; }
 
   ul { margin-left: 1.2em; margin-bottom: 0.4em; list-style: none; }
   li { margin-bottom: 0.35em; padding-left: 0.2em; }
@@ -84,14 +84,14 @@
 
   /* ---------- cards ---------- */
   .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 16px 18px 14px;
   }
   .card-accent {
-    background: var(--bg-card);
-    border: 1px solid var(--accent-dim);
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 16px 18px 14px;
     border-left: 3px solid var(--accent);
@@ -104,8 +104,8 @@
     gap: 0; margin-top: 20px;
   }
   .flow-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 12px 16px;
     text-align: center;
@@ -122,15 +122,15 @@
 
   /* ---------- equation display ---------- */
   .equation {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 12px 20px;
-    font-size: 1.15rem;
-    color: var(--fg-bright);
+    font-size: 0.95rem;
+    color: #374151;
     text-align: center;
     font-family: 'Courier New', monospace;
-    margin-top: 16px;
+    margin-top: 12px;
     letter-spacing: 0.02em;
   }
   .equation .accent { color: var(--accent); }
@@ -138,18 +138,19 @@
 
   /* ---------- badge / tag ---------- */
   .badge {
-    display: inline-block; background: var(--accent-dim); color: var(--fg-bright);
+    display: inline-block; background: var(--accent-dim); color: #ffffff;
     padding: 3px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;
     margin-right: 6px; margin-bottom: 4px;
   }
 
   /* ---------- callout ---------- */
   .callout {
-    background: var(--accent-glow);
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-left: 3px solid var(--accent);
     border-radius: 0 8px 8px 0;
     padding: 12px 16px;
-    margin-top: 14px;
+    margin-top: 20px;
     font-size: 1.05rem;
     color: var(--fg);
   }
@@ -166,7 +167,7 @@
   .title-slide h1 { font-size: 3.2rem; margin-bottom: 0.2em; }
   .title-slide .subtitle { font-size: 1.4rem; margin-bottom: 1.5em; }
   .title-slide .meta { font-size: 1.05rem; }
-  .title-accent { width: 80px; height: 3px; background: var(--accent); margin: 0 auto 1.2em; border-radius: 2px; }
+  .title-accent { width: 80px; height: 3px; background: #4d7c5e; margin: 0 auto 1.2em; border-radius: 2px; }
 
   /* ---------- principle number ---------- */
   .principle-num {
@@ -194,7 +195,7 @@
     content: counter(item);
     display: inline-flex; align-items: center; justify-content: center;
     width: 28px; height: 28px; background: var(--accent-dim);
-    color: var(--fg-bright); border-radius: 50%; font-size: 0.85rem;
+    color: #ffffff; border-radius: 50%; font-size: 0.85rem;
     font-weight: 700; margin-right: 14px; vertical-align: middle;
   }
 
@@ -903,7 +904,7 @@
       </p>
     </div>
   </div>
-  <button id="restartBtn" style="margin-top:1.5em; padding:0.45em 1.6em; border-radius:24px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:0.9rem; cursor:pointer; font-weight:500; transition:background 0.2s, color 0.2s;" onmouseover="this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--accent');this.style.color='#111'" onmouseout="this.style.background='transparent';this.style.color=getComputedStyle(document.documentElement).getPropertyValue('--accent')">Return to start</button>
+  <button id="restartBtn" style="margin-top:1.5em; padding:0.45em 1.6em; border-radius:24px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:0.9rem; cursor:pointer; font-weight:500; transition:background 0.2s, color 0.2s;" onmouseover="this.style.background=getComputedStyle(document.documentElement).getPropertyValue('--accent');this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color=getComputedStyle(document.documentElement).getPropertyValue('--accent')">Return to start</button>
 </div>
 
 </div><!-- end .deck -->

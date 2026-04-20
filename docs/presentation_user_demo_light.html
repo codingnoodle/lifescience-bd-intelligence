@@ -3,21 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BD Decision Intelligence - Product Demo</title>
+<title>BD Decision Intelligence - Product Demo (Light)</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --navy: #0a1628;
-    --navy-light: #132038;
-    --navy-mid: #1a2d4a;
-    --accent: #4a9eff;
-    --accent-dim: #2a6cbf;
-    --white: #f0f2f5;
-    --gray: #8a96a8;
-    --green: #34d399;
-    --orange: #f59e0b;
-    --red: #ef4444;
+    --navy: #ffffff;
+    --navy-light: #f8f9fb;
+    --navy-mid: #f0f2f5;
+    --accent: #2563eb;
+    --accent-dim: #1e40af;
+    --gold: #b8860b;
+    --gold-light: #fef3c7;
+    --white: #1a1a2e;
+    --gray: #6b7280;
+    --green: #059669;
+    --orange: #b8860b;
+    --red: #dc2626;
   }
 
   html, body {
@@ -44,7 +46,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.45s ease;
-    background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+    background: #f8f9fb;
     border-top: 3px solid var(--accent);
   }
 
@@ -58,19 +60,19 @@
     content: '';
     position: absolute;
     top: 3px; right: 0;
-    width: 120px; height: 120px;
-    background: radial-gradient(ellipse at top right, rgba(74,158,255,0.06) 0%, transparent 70%);
+    width: 140px; height: 140px;
+    background: radial-gradient(ellipse at top right, rgba(37,99,235,0.05) 0%, transparent 70%);
     pointer-events: none;
   }
 
-  /* Bottom-left thin line decoration */
+  /* Bottom-left thin accent line */
   .slide::after {
     content: '';
     position: absolute;
     bottom: 24px; left: 8vw;
     width: 40px; height: 2px;
     background: var(--accent);
-    opacity: 0.3;
+    opacity: 0.25;
     border-radius: 1px;
     pointer-events: none;
   }
@@ -113,7 +115,7 @@
 
   .context-line {
     font-size: clamp(12px, 1vw, 18px);
-    color: var(--accent-dim);
+    color: var(--accent);
     margin-top: 1.5em;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -146,11 +148,11 @@
   .orange { color: var(--orange); }
   .red { color: var(--red); }
   .white { color: var(--white); }
-  .bold { font-weight: 700; }
+  .bold { font-weight: 700; color: #111827; }
 
   .card {
-    background: var(--navy-mid);
-    border: 1px solid rgba(74, 158, 255, 0.12);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: clamp(16px, 2vw, 32px);
     margin: 0.4em 0;
@@ -175,15 +177,15 @@
   }
 
   .terminal {
-    background: #0d1117;
-    border: 1px solid rgba(74, 158, 255, 0.2);
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
     border-radius: 10px;
     padding: clamp(16px, 2vw, 32px);
     margin-top: 0.8em;
     font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
     font-size: clamp(13px, 1.3vw, 24px);
     line-height: 1.7;
-    color: var(--white);
+    color: #374151;
   }
 
   .terminal .prompt {
@@ -191,12 +193,12 @@
   }
 
   .terminal .output {
-    color: var(--gray);
+    color: #6b7280;
   }
 
   .tag {
     display: inline-block;
-    background: rgba(74, 158, 255, 0.15);
+    background: rgba(37, 99, 235, 0.1);
     color: var(--accent);
     border-radius: 6px;
     padding: 0.15em 0.6em;
@@ -206,12 +208,12 @@
   }
 
   .tag.green-tag {
-    background: rgba(52, 211, 153, 0.15);
+    background: rgba(5, 150, 105, 0.1);
     color: var(--green);
   }
 
   .tag.orange-tag {
-    background: rgba(245, 158, 11, 0.15);
+    background: rgba(217, 119, 6, 0.1);
     color: var(--orange);
   }
 
@@ -250,13 +252,13 @@
     padding: 0.5em 0.8em;
     color: var(--accent);
     font-weight: 600;
-    border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+    border-bottom: 1px solid #d1d5db;
   }
 
   td {
     padding: 0.45em 0.8em;
     color: var(--gray);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid #e5e7eb;
   }
 
   td.highlight {
@@ -288,7 +290,7 @@
   .wf-bar .wf-value {
     font-size: clamp(12px, 1.2vw, 22px);
     font-weight: 700;
-    color: var(--white);
+    color: #ffffff;
     margin-bottom: 0.3em;
   }
 
@@ -308,7 +310,7 @@
     top: 3vh;
     right: 4vw;
     font-size: clamp(10px, 0.85vw, 14px);
-    color: var(--accent-dim);
+    color: var(--accent);
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -329,7 +331,7 @@
     bottom: 2vh;
     right: 3vw;
     font-size: clamp(10px, 0.8vw, 13px);
-    color: rgba(138,150,168,0.4);
+    color: #6b7280;
   }
 
   .divider {
@@ -365,7 +367,7 @@
     font-size: clamp(11px, 1vw, 18px);
     color: var(--red);
     text-decoration: line-through;
-    opacity: 0.7;
+    opacity: 0.8;
   }
 
   .comparison-grid .card .after {
@@ -380,8 +382,8 @@
     align-items: center;
     gap: clamp(10px, 1.5vw, 24px);
     padding: clamp(10px, 1.2vw, 20px);
-    background: var(--navy-mid);
-    border: 1px solid rgba(74, 158, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
     margin: 0.4em 0;
   }
@@ -418,12 +420,12 @@
   }
 
   .urgency.high {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(220, 38, 38, 0.1);
     color: var(--red);
   }
 
   .urgency.med {
-    background: rgba(245, 158, 11, 0.15);
+    background: rgba(217, 119, 6, 0.1);
     color: var(--orange);
   }
 </style>
@@ -455,13 +457,13 @@
     <div class="divider"></div>
     <div style="display:grid; grid-template-columns:auto 1fr; gap:0.6em 1.5em; align-items:baseline; max-width:700px;">
       <span class="accent bold" style="font-size:clamp(14px,1.4vw,24px);">1.</span>
-      <p><span class="white bold">The problem</span> — why BD diligence needs a new approach</p>
+      <p><span class="white bold">The problem</span> -- why BD diligence needs a new approach</p>
       <span class="accent bold" style="font-size:clamp(14px,1.4vw,24px);">2.</span>
-      <p><span class="white bold">Product walkthrough</span> — what the tool does and how it works</p>
+      <p><span class="white bold">Product walkthrough</span> -- what the tool does and how it works</p>
       <span class="accent bold" style="font-size:clamp(14px,1.4vw,24px);">3.</span>
-      <p><span class="white bold">Live demo</span> — TERN-701 end-to-end analysis</p>
+      <p><span class="white bold">Live demo</span> -- TERN-701 end-to-end analysis</p>
       <span class="accent bold" style="font-size:clamp(14px,1.4vw,24px);">4.</span>
-      <p><span class="white bold">Validation</span> — how the system performs against real 2025-2026 deals</p>
+      <p><span class="white bold">Validation</span> -- how the system performs against real 2025-2026 deals</p>
       <span class="accent bold" style="font-size:clamp(14px,1.4vw,24px);">5.</span>
       <p><span class="white bold">Use cases & next steps</span></p>
     </div>
@@ -474,7 +476,7 @@
     <div class="divider"></div>
     <ul>
       <li>Understand <span class="white bold">how AI agents decompose</span> a complex BD analysis into structured steps</li>
-      <li>See the <span class="white bold">dual-view valuation</span> framework — risk-adjusted vs. if-succeed — and why both matter</li>
+      <li>See the <span class="white bold">dual-view valuation</span> framework -- risk-adjusted vs. if-succeed -- and why both matter</li>
       <li>Know how to <span class="white bold">interpret and override</span> every assumption the system makes</li>
       <li>Be ready to <span class="white bold">try it yourself</span> during the hands-on session</li>
     </ul>
@@ -644,7 +646,7 @@
             <span class="wf-value">$1.7B</span>
             <span class="wf-label">Displacement</span>
           </div>
-          <div class="wf-bar" style="height:70%; background:linear-gradient(180deg, #4a9eff, #2563eb);">
+          <div class="wf-bar" style="height:70%; background:linear-gradient(180deg, #2563eb, #1d4ed8);">
             <span class="wf-value">$2.1B</span>
             <span class="wf-label">Strategic</span>
           </div>
@@ -654,15 +656,15 @@
         <h3>If-Succeed View</h3>
         <p style="font-size:clamp(11px,0.95vw,15px); margin-bottom:0.5em;">Where deals actually get priced in competitive bids</p>
         <div class="waterfall" style="height:clamp(80px,14vh,180px);">
-          <div class="wf-bar" style="height:45%; background:linear-gradient(180deg, var(--green), #059669);">
+          <div class="wf-bar" style="height:45%; background:linear-gradient(180deg, var(--green), #047857);">
             <span class="wf-value">$3.0B</span>
             <span class="wf-label">Standalone</span>
           </div>
-          <div class="wf-bar" style="height:65%; background:linear-gradient(180deg, var(--green), #059669);">
+          <div class="wf-bar" style="height:65%; background:linear-gradient(180deg, var(--green), #047857);">
             <span class="wf-value">$4.2B</span>
             <span class="wf-label">Displacement</span>
           </div>
-          <div class="wf-bar" style="height:85%; background:linear-gradient(180deg, #34d399, #10b981);">
+          <div class="wf-bar" style="height:85%; background:linear-gradient(180deg, #059669, #047857);">
             <span class="wf-value">$5.1B</span>
             <span class="wf-label">Strategic</span>
           </div>
@@ -889,25 +891,25 @@
       <div class="card" style="border-top:3px solid var(--green);">
         <h3>Phase 2: Pilot</h3>
         <ul>
-          <li><span class="white bold">SSO / RBAC</span> — enterprise auth, team-level access</li>
-          <li><span class="white bold">Portfolio mode</span> — batch-analyze 20+ assets, comparative ranking</li>
-          <li><span class="white bold">Audit trail</span> — log every assumption, override, and recalculation</li>
-          <li><span class="white bold">Internal data connectors</span> — CRM, deal tracker, proprietary forecasts</li>
+          <li><span class="white bold">SSO / RBAC</span> -- enterprise auth, team-level access</li>
+          <li><span class="white bold">Portfolio mode</span> -- batch-analyze 20+ assets, comparative ranking</li>
+          <li><span class="white bold">Audit trail</span> -- log every assumption, override, and recalculation</li>
+          <li><span class="white bold">Internal data connectors</span> -- CRM, deal tracker, proprietary forecasts</li>
         </ul>
       </div>
       <div class="card" style="border-top:3px solid var(--orange);">
         <h3>Phase 3: Scale</h3>
         <ul>
-          <li><span class="white bold">Live data feeds</span> — ClinicalTrials.gov API, SEC filings, conference abstracts</li>
-          <li><span class="white bold">Automated alerts</span> — watchlist monitoring, material event triggers</li>
-          <li><span class="white bold">Multi-tenant</span> — separate deal rooms per team/fund</li>
-          <li><span class="white bold">Custom models</span> — fine-tuned on your firm's historical deal data</li>
+          <li><span class="white bold">Live data feeds</span> -- ClinicalTrials.gov API, SEC filings, conference abstracts</li>
+          <li><span class="white bold">Automated alerts</span> -- watchlist monitoring, material event triggers</li>
+          <li><span class="white bold">Multi-tenant</span> -- separate deal rooms per team/fund</li>
+          <li><span class="white bold">Custom models</span> -- fine-tuned on your firm's historical deal data</li>
         </ul>
       </div>
     </div>
     <div class="card" style="margin-top:1em; border-left:3px solid var(--accent);">
       <p style="font-size:clamp(13px,1.2vw,20px); color:var(--white);">
-        The architecture is designed to scale — specialized agents mean you can upgrade any single component (search, scoring, pricing) without rebuilding the system.
+        The architecture is designed to scale -- specialized agents mean you can upgrade any single component (search, scoring, pricing) without rebuilding the system.
       </p>
     </div>
   </div>
