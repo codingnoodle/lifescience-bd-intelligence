@@ -13,9 +13,7 @@ Type any drug asset and get:
 
 ## Architecture
 
-```
-research_planner → science_agent → market_agent → synthesizer
-```
+![State Graph](docs/stategraph.png)
 
 Sequential pipeline — market agent reads PTRS from science agent, synthesizer reads everything.
 
