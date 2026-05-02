@@ -21,6 +21,7 @@
     --warm:       #d97706;
     --coral:      #dc2626;
     --blue:       #2563eb;
+    --purple:     #7c3aed;
     --border:     #e5e7eb;
     --slide-w:    1280px;
     --slide-h:    720px;
@@ -33,9 +34,7 @@
   }
 
   /* ---------- slide engine ---------- */
-  .deck {
-    position: relative; width: 100vw; height: 100vh;
-  }
+  .deck { position: relative; width: 100vw; height: 100vh; }
   .slide {
     position: absolute; inset: 0;
     display: none; flex-direction: column; justify-content: center;
@@ -59,13 +58,13 @@
 
   /* ---------- typography ---------- */
   h1 { font-size: 2.2rem; color: var(--fg-bright); margin-bottom: 0.2em; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
-  h2 { font-size: 1.6rem; color: #111827; margin-bottom: 0.15em; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
-  h3 { font-size: 0.9rem; color: #4d7c5e; margin-bottom: 0.35em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  h2 { font-size: 1.6rem; color: var(--fg-bright); margin-bottom: 0.15em; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.35em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
   p, li { font-size: 0.92rem; line-height: 1.6; color: var(--fg); }
   .subtitle { font-size: 1.05rem; color: var(--fg-dim); margin-bottom: 0.4em; font-weight: 400; }
-  .section-label { font-size: 0.75rem; color: #4d7c5e; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.5em; }
+  .section-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.5em; }
   .small { font-size: 0.8rem; color: var(--fg-dim); }
-  .meta { font-size: 0.9rem; color: #6b7280; margin-top: 1em; }
+  .meta { font-size: 0.9rem; color: var(--fg-dim); margin-top: 1em; }
 
   ul { margin-left: 1.2em; margin-bottom: 0.4em; list-style: none; }
   li { margin-bottom: 0.35em; padding-left: 0.2em; }
@@ -99,10 +98,7 @@
   .card h3 { margin-bottom: 0.3em; }
 
   /* ---------- visual: flow arrows ---------- */
-  .flow {
-    display: flex; align-items: center; justify-content: center;
-    gap: 0; margin-top: 20px;
-  }
+  .flow { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 20px; }
   .flow-box {
     background: #ffffff;
     border: 1px solid #d1d5db;
@@ -115,10 +111,7 @@
     border-color: var(--accent);
     box-shadow: 0 0 20px var(--accent-glow);
   }
-  .flow-arrow {
-    font-size: 1.5rem; color: var(--accent); padding: 0 14px;
-    flex-shrink: 0;
-  }
+  .flow-arrow { font-size: 1.5rem; color: var(--accent); padding: 0 14px; flex-shrink: 0; }
 
   /* ---------- equation display ---------- */
   .equation {
@@ -126,11 +119,11 @@
     border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 12px 20px;
-    font-size: 0.95rem;
-    color: #374151;
+    font-size: 1.15rem;
+    color: var(--fg-bright);
     text-align: center;
     font-family: 'Courier New', monospace;
-    margin-top: 12px;
+    margin-top: 16px;
     letter-spacing: 0.02em;
   }
   .equation .accent { color: var(--accent); }
@@ -142,6 +135,12 @@
     padding: 3px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;
     margin-right: 6px; margin-bottom: 4px;
   }
+  .badge-model {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em;
+  }
+  .badge-haiku { background: #dbeafe; color: var(--blue); }
+  .badge-sonnet { background: #ede9fe; color: var(--purple); }
 
   /* ---------- callout ---------- */
   .callout {
@@ -150,54 +149,128 @@
     border-left: 3px solid var(--accent);
     border-radius: 0 8px 8px 0;
     padding: 12px 16px;
-    margin-top: 20px;
+    margin-top: 14px;
     font-size: 1.05rem;
     color: var(--fg);
   }
   .callout strong { color: var(--accent); }
 
-  /* ---------- number highlight ---------- */
-  .big-num {
-    font-size: 2.4rem; font-weight: 700; color: var(--accent);
-    line-height: 1;
+  /* ---------- vibe coding sticker (amber) ---------- */
+  .prompt-box {
+    background: #fffbeb;
+    border: 1px solid #e5d5a0;
+    border-radius: 2px;
+    padding: 14px 16px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #78540a;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    margin-top: 10px;
+    box-shadow: 3px 3px 0 #e5e7eb;
+    transform: rotate(-0.4deg);
+    position: relative;
   }
+  .prompt-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--warm);
+    border-radius: 2px 2px 0 0;
+  }
+  .prompt-box .prompt-label {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 0.65rem;
+    color: var(--warm);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .prompt-box .prompt-label::before {
+    content: '>';
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: var(--warm);
+  }
+
+  /* ---------- user input chat bubble (green) ---------- */
+  .prompt-box.user-input {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid #a7d8c0;
+    border-left: 3px solid var(--accent);
+    border-radius: 12px 12px 4px 12px;
+    box-shadow: 0 0 12px #4d7c5e10;
+    transform: none;
+    padding: 10px 16px 10px 14px;
+    font-weight: 700;
+    color: #1a4a2e;
+    position: relative;
+  }
+  .prompt-box.user-input::before {
+    content: none;
+  }
+  .prompt-box.user-input::after {
+    content: '';
+    position: absolute; bottom: -6px; right: 16px;
+    width: 12px; height: 12px;
+    background: #f0fdf4;
+    border-right: 1px solid #a7d8c0;
+    border-bottom: 1px solid #a7d8c0;
+    transform: rotate(45deg);
+  }
+  .prompt-box.user-input .prompt-label {
+    color: var(--accent);
+    font-size: 0.65rem;
+  }
+  .prompt-box.user-input .prompt-label::before {
+    content: '\1F464';
+    font-size: 0.85rem;
+  }
+
+  /* ---------- icon circle ---------- */
+  .icon-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .icon-circle-sm {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  /* ---------- number highlight ---------- */
+  .big-num { font-size: 2.4rem; font-weight: 700; color: var(--accent); line-height: 1; }
 
   /* ---------- title slide specific ---------- */
   .title-slide { justify-content: center; align-items: center; text-align: center; }
   .title-slide h1 { font-size: 3.2rem; margin-bottom: 0.2em; }
   .title-slide .subtitle { font-size: 1.4rem; margin-bottom: 1.5em; }
   .title-slide .meta { font-size: 1.05rem; }
-  .title-accent { width: 80px; height: 3px; background: #4d7c5e; margin: 0 auto 1.2em; border-radius: 2px; }
+  .title-accent { width: 80px; height: 3px; background: var(--accent); margin: 0 auto 1.2em; border-radius: 2px; }
 
   /* ---------- principle number ---------- */
   .principle-num {
     font-size: 3.5rem; font-weight: 800; color: var(--accent-dim);
-    line-height: 1; margin-bottom: 4px; opacity: 0.7;
+    line-height: 1; margin-bottom: 4px; opacity: 0.5;
   }
 
   /* ---------- vs separator ---------- */
   .vs-block { display: flex; align-items: stretch; gap: 24px; margin-top: 20px; }
   .vs-side { flex: 1; }
-  .vs-label {
-    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
-    font-weight: 600; margin-bottom: 8px;
-  }
+  .vs-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 8px; }
   .vs-label.bad { color: var(--coral); }
   .vs-label.good { color: var(--accent); }
-  .vs-divider {
-    width: 1px; background: var(--border); flex-shrink: 0;
-  }
-
-  /* ---------- numbered list (for takeaways) ---------- */
-  .num-list { list-style: none; margin-left: 0; counter-reset: item; }
-  .num-list li { counter-increment: item; padding-left: 0; margin-bottom: 0.7em; }
-  .num-list li::before {
-    content: counter(item);
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px; background: var(--accent-dim);
-    color: #ffffff; border-radius: 50%; font-size: 0.85rem;
-    font-weight: 700; margin-right: 14px; vertical-align: middle;
-  }
+  .vs-divider { width: 1px; background: var(--border); flex-shrink: 0; }
 
   /* ---------- responsive scaling ---------- */
   @media (max-width: 1024px) {
@@ -235,26 +308,32 @@
 <div class="slide" data-slide="1">
   <p class="section-label">Agenda</p>
   <h2>What we will cover today</h2>
-  <div class="mt-2" style="display:grid; grid-template-columns:auto 1fr auto; gap:0.5em 1.2em; align-items:baseline; max-width:750px;">
-    <span style="color:var(--accent); font-weight:700; font-size:1.1rem;">1.</span>
-    <p><strong>The opportunity</strong> -- why domain AI tools matter now</p>
-    <span class="small">5 min</span>
-
-    <span style="color:var(--accent); font-weight:700; font-size:1.1rem;">2.</span>
-    <p><strong>Five design principles</strong> -- the thinking process behind the build</p>
-    <span class="small">15 min</span>
-
-    <span style="color:var(--accent); font-weight:700; font-size:1.1rem;">3.</span>
-    <p><strong>Live demo</strong> -- see the tool analyze a real drug asset</p>
-    <span class="small">15 min</span>
-
-    <span style="color:var(--accent); font-weight:700; font-size:1.1rem;">4.</span>
-    <p><strong>Validation</strong> -- does it match real deal prices?</p>
-    <span class="small">5 min</span>
-
-    <span style="color:var(--accent); font-weight:700; font-size:1.1rem;">5.</span>
-    <p><strong>Hands-on activity</strong> -- try it yourself, design your own</p>
-    <span class="small">20 min</span>
+  <div class="mt-2" style="max-width:750px;">
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+      <div class="icon-circle" style="background:#ecfdf5;">&#127919;</div>
+      <div style="flex:1;"><strong>The opportunity</strong> &mdash; why domain AI tools matter now</div>
+      <span class="small">5 min</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+      <div class="icon-circle" style="background:#eff6ff;">&#9999;&#65039;</div>
+      <div style="flex:1;"><strong>Five design principles</strong> &mdash; the thinking behind the build</div>
+      <span class="small">15 min</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+      <div class="icon-circle" style="background:#f5f3ff;">&#9654;&#65039;</div>
+      <div style="flex:1;"><strong>Live demo</strong> &mdash; see the tool analyze a real drug asset</div>
+      <span class="small">15 min</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+      <div class="icon-circle" style="background:#fffbeb;">&#9989;</div>
+      <div style="flex:1;"><strong>Validation</strong> &mdash; does it match real deal prices?</div>
+      <span class="small">5 min</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="icon-circle" style="background:#f0fdfa;">&#128736;&#65039;</div>
+      <div style="flex:1;"><strong>Hands-on activity</strong> &mdash; try it yourself, design your own</div>
+      <span class="small">20 min</span>
+    </div>
   </div>
 </div>
 
@@ -264,16 +343,26 @@
 <div class="slide" data-slide="2">
   <p class="section-label">Goals</p>
   <h2>What you should walk away with</h2>
-  <div class="mt-2" style="max-width: 700px;">
-    <ul>
-      <li>Understand <strong>5 design principles</strong> for building AI-powered analysis tools -- applicable to any domain</li>
-      <li>See how to go from <strong>expert workflow to multi-agent system</strong> -- the decomposition process</li>
-      <li>Gain intuition for what <strong>AI should do</strong> (reasoning, search) vs. what <strong>code should do</strong> (math, validation)</li>
-      <li>Be able to <strong>try the tool</strong> and start thinking about what you would build for your own domain</li>
-    </ul>
-    <div class="callout mt-2" style="border-left: 3px solid var(--accent);">
-      <p><strong>No coding experience required.</strong> The principles we cover are about design thinking -- how to structure a problem so AI can help solve it.</p>
+  <div class="mt-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:900px;">
+    <div class="card" style="display:flex; gap:14px; align-items:flex-start; padding:18px;">
+      <div class="icon-circle-sm" style="background:#ecfdf5;">&#128218;</div>
+      <p><strong>5 design principles</strong> for building AI analysis tools &mdash; applicable to any domain</p>
     </div>
+    <div class="card" style="display:flex; gap:14px; align-items:flex-start; padding:18px;">
+      <div class="icon-circle-sm" style="background:#eff6ff;">&#128268;</div>
+      <p>How to go from <strong>expert workflow to multi-agent system</strong></p>
+    </div>
+    <div class="card" style="display:flex; gap:14px; align-items:flex-start; padding:18px;">
+      <div class="icon-circle-sm" style="background:#f5f3ff;">&#9878;&#65039;</div>
+      <p>Intuition for what <strong>AI should do</strong> vs. what <strong>code should do</strong></p>
+    </div>
+    <div class="card" style="display:flex; gap:14px; align-items:flex-start; padding:18px;">
+      <div class="icon-circle-sm" style="background:#fffbeb;">&#128161;</div>
+      <p><strong>Try the tool</strong> and start thinking about your own domain</p>
+    </div>
+  </div>
+  <div class="callout mt-2" style="max-width:900px;">
+    <strong>No coding experience required.</strong> The principles are about design thinking &mdash; how to structure a problem so AI can help solve it.
   </div>
 </div>
 
@@ -282,96 +371,90 @@
 <!-- ============================================================ -->
 <div class="slide" data-slide="3">
   <p class="section-label">From Lecture to Production</p>
-  <h2>The theory you just learned -- applied to a real project</h2>
-  <p class="subtitle">Every pattern from the notebooks shows up in the BD intelligence system</p>
+  <h2>The theory you just learned &mdash; applied to a real project</h2>
 
   <div style="display:grid; grid-template-columns:1fr 40px 1fr; gap:0; margin-top:20px;">
-    <!-- Left: Lecture -->
     <div>
-      <h3 style="margin-bottom:14px;">From the lecture notebooks</h3>
-
+      <h3 style="margin-bottom:14px;">From the notebooks</h3>
       <div class="flow-box" style="margin-bottom:12px; padding:12px 16px;">
         <p style="color:var(--accent); font-size:0.9rem; font-weight:600; margin-bottom:2px;">01: Hello Agent</p>
         <p>StateGraph + TypedDict + single LLM node</p>
       </div>
-
       <div class="flow-box" style="margin-bottom:12px; padding:12px 16px;">
         <p style="color:var(--accent); font-size:0.9rem; font-weight:600; margin-bottom:2px;">02a: Agent Basics</p>
         <p>LLM + tool + persona = specialized agent</p>
       </div>
-
       <div class="flow-box" style="padding:12px 16px;">
         <p style="color:var(--accent); font-size:0.9rem; font-weight:600; margin-bottom:2px;">02b: Orchestration</p>
         <p>3 agents, sequential pipeline, shared state</p>
       </div>
     </div>
-
-    <!-- Arrow -->
     <div style="display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent);">&#8594;</div>
-
-    <!-- Right: Production -->
     <div>
-      <h3 style="margin-bottom:14px;">In this production system</h3>
-
+      <h3 style="margin-bottom:14px;">In this system</h3>
       <div class="flow-box" style="margin-bottom:12px; padding:12px 16px; border-left:3px solid var(--accent);">
         <p style="color:var(--fg-bright); font-size:0.9rem; font-weight:600; margin-bottom:2px;">StateGraph(BDState)</p>
-        <p>Same pattern -- 25+ fields, multiple agents writing</p>
+        <p>Same pattern &mdash; 25+ fields, multiple agents writing</p>
       </div>
-
       <div class="flow-box" style="margin-bottom:12px; padding:12px 16px; border-left:3px solid var(--accent);">
         <p style="color:var(--fg-bright); font-size:0.9rem; font-weight:600; margin-bottom:2px;">Sonnet + Tavily + domain prompts</p>
-        <p>Same agent pattern -- real web search + rubrics</p>
+        <p>Same agent pattern &mdash; real web search + rubrics</p>
       </div>
-
       <div class="flow-box" style="padding:12px 16px; border-left:3px solid var(--accent);">
         <p style="color:var(--fg-bright); font-size:0.9rem; font-weight:600; margin-bottom:2px;">4-node sequential pipeline</p>
-        <p>Same compile() -- enriched data flows through</p>
+        <p>Same compile() &mdash; enriched data flows through</p>
       </div>
     </div>
   </div>
 
-  <div class="callout mt-2" style="border-left:3px solid var(--accent);">
-    <p><strong>The gap between a tutorial and production isn't the framework</strong> -- it's the domain design. The LangGraph code is nearly identical. The hard part is decomposing the problem and writing good prompts.</p>
+  <div class="callout mt-2">
+    <strong>The gap isn't the framework</strong> &mdash; it's the domain design. The LangGraph code is nearly identical. The hard part is decomposing the problem and writing good prompts.
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 5: The Opportunity + Case Study (combined) -->
+<!-- SLIDE 5: The Opportunity -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="4">
   <p class="section-label">The Opportunity</p>
-  <h2>AI tools that accelerate decisions, not replace experts</h2>
-  <p class="subtitle">The goal is faster collaboration, not automation</p>
+  <h2>Adding decision velocity to the BD process</h2>
 
   <div class="two-col mt-2">
     <div>
-      <ul>
-        <li>Experts follow <strong>repeatable analysis patterns</strong> that can be decomposed into steps</li>
-        <li>AI handles the <strong>research and computation</strong> -- humans make the decisions</li>
-        <li>The result: <strong>faster team alignment</strong> with transparent, editable assumptions</li>
-        <li>This framework applies to any domain -- pharma BD is today's example</li>
-      </ul>
-      <div class="callout mt-2">
-        <strong>Not replacing the analyst.</strong> Giving them a first draft in 2 minutes instead of 2 weeks -- so the team spends time debating strategy, not gathering data.
+      <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:18px;">
+        <div class="icon-circle-sm" style="background:#ecfdf5;">&#9889;</div>
+        <p><strong>Accelerate analysis</strong> &mdash; first-pass diligence in minutes, not weeks</p>
+      </div>
+      <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:18px;">
+        <div class="icon-circle-sm" style="background:#eff6ff;">&#128202;</div>
+        <p><strong>Build conviction faster</strong> &mdash; risk-adjusted NPV, science + market scores give analysts a quantified starting point</p>
+      </div>
+      <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:18px;">
+        <div class="icon-circle-sm" style="background:#f5f3ff;">&#128269;</div>
+        <p><strong>Retrieve comps instantly</strong> &mdash; pull industry-level key deals and analogs in seconds instead of manual research</p>
+      </div>
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div class="icon-circle-sm" style="background:#fffbeb;">&#129309;</div>
+        <p><strong>Align teams earlier</strong> &mdash; transparent, editable assumptions so the debate starts on strategy, not data gathering</p>
       </div>
     </div>
     <div>
-      <p style="font-size:0.85rem; color:var(--fg-dim); margin-bottom:10px;">A BD analyst's workflow -- each step becomes an AI agent:</p>
-      <div class="flow" style="flex-direction:column; gap:8px; align-items:stretch;">
+      <p class="small" style="margin-bottom:10px;">A BD analyst's workflow &mdash; each step becomes an agent:</p>
+      <div style="display:flex; flex-direction:column; gap:8px;">
         <div class="flow-box" style="display:flex; gap:12px; align-items:center; text-align:left; padding:10px 14px;">
-          <span style="color:var(--accent); font-weight:700; font-size:0.8rem; min-width:18px;">1</span>
+          <span style="color:var(--accent); font-weight:700; font-size:0.9rem; min-width:22px;">1</span>
           <p style="font-size:0.88rem; color:var(--fg-bright);">Research the science</p>
         </div>
         <div class="flow-box" style="display:flex; gap:12px; align-items:center; text-align:left; padding:10px 14px;">
-          <span style="color:var(--accent); font-weight:700; font-size:0.8rem; min-width:18px;">2</span>
+          <span style="color:var(--accent); font-weight:700; font-size:0.9rem; min-width:22px;">2</span>
           <p style="font-size:0.88rem; color:var(--fg-bright);">Size the market and find comparators</p>
         </div>
         <div class="flow-box" style="display:flex; gap:12px; align-items:center; text-align:left; padding:10px 14px;">
-          <span style="color:var(--accent); font-weight:700; font-size:0.8rem; min-width:18px;">3</span>
+          <span style="color:var(--accent); font-weight:700; font-size:0.9rem; min-width:22px;">3</span>
           <p style="font-size:0.88rem; color:var(--fg-bright);">Identify likely buyers and urgency</p>
         </div>
         <div class="flow-box" style="display:flex; gap:12px; align-items:center; text-align:left; padding:10px 14px;">
-          <span style="color:var(--accent); font-weight:700; font-size:0.8rem; min-width:18px;">4</span>
+          <span style="color:var(--accent); font-weight:700; font-size:0.9rem; min-width:22px;">4</span>
           <p style="font-size:0.88rem; color:var(--fg-bright);">Price the deal with scenarios</p>
         </div>
       </div>
@@ -386,42 +469,51 @@
   <p class="section-label">Vibe Coding</p>
   <h2>Prompt 1: Architecture in one shot</h2>
   <p class="subtitle">One comprehensive prompt scaffolds the entire backend</p>
-  <div class="two-col mt-2">
+
+  <div class="two-col mt-1">
     <div>
       <div class="card" style="padding:16px; border-left:3px solid var(--accent);">
         <h3 style="font-size:0.85rem;">What the prompt tells Claude Code</h3>
-        <ul style="font-size:0.85rem;">
-          <li>Tech stack: FastAPI + LangGraph + Claude Sonnet</li>
-          <li>4-node sequential pipeline with clear ownership</li>
-          <li>What each agent searches for and outputs</li>
-          <li>Fixed vocabularies (9 de-risking signals, 5 verdicts)</li>
-          <li>Buyer urgency tables (patent cliff + flush capital)</li>
-          <li>Three-scenario dual-view valuation formula</li>
-        </ul>
+        <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 10px; font-size:0.85rem; margin-top:8px;">
+          <span style="color:var(--accent);">&#9670;</span><span>FastAPI + LangGraph + Claude Sonnet stack</span>
+          <span style="color:var(--accent);">&#9670;</span><span>4-node sequential pipeline with clear ownership</span>
+          <span style="color:var(--accent);">&#9670;</span><span>Fixed vocabularies (9 signals, 5 verdicts)</span>
+          <span style="color:var(--accent);">&#9670;</span><span>Three-scenario valuation formula</span>
+          <span style="color:var(--accent);">&#9670;</span><span>State schema with ~25 fields</span>
+        </div>
       </div>
+      <div class="prompt-box" style="margin-top:12px;">
+        <span class="prompt-label">Example prompt to Claude Code</span>I want to build a BD intelligence tool. When a
+user types a drug name, the system should:
+1. Parse the asset and its indications
+2. Research the science (MOA, trial data, PTRS)
+3. Find comparators and size the market
+4. Identify likely buyers and price the deal
+
+Use 4 agents in a pipeline. Each agent should
+only own its piece — no overlap. Use lookup
+tables for PTRS math, not the LLM.</div>
     </div>
     <div>
       <div class="card" style="padding:16px;">
         <h3 style="font-size:0.85rem;">What it produces (~10 files)</h3>
-        <ul style="font-size:0.85rem;">
-          <li>state.py -- shared TypedDict schema</li>
-          <li>graph.py -- compiled LangGraph pipeline</li>
-          <li>4 agent files with prompts + Tavily search</li>
-          <li>PTRS lookup with adjustment function</li>
-          <li>Buyer context tables</li>
-          <li>FastAPI with SSE streaming endpoint</li>
-        </ul>
-        <div style="margin-top:12px; padding:8px 12px; background:var(--accent-glow); border-radius:6px;">
-          <p style="font-size:0.85rem; color:var(--accent);"><strong>Key:</strong> Be specific about ownership boundaries and formulas.</p>
+        <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 10px; font-size:0.85rem; margin-top:8px;">
+          <span style="color:var(--fg-dim);">&#128196;</span><span>state.py &mdash; shared TypedDict schema</span>
+          <span style="color:var(--fg-dim);">&#128196;</span><span>graph.py &mdash; compiled LangGraph pipeline</span>
+          <span style="color:var(--fg-dim);">&#128196;</span><span>4 agent files with prompts + Tavily search</span>
+          <span style="color:var(--fg-dim);">&#128196;</span><span>PTRS lookup + buyer context tables</span>
+          <span style="color:var(--fg-dim);">&#128196;</span><span>FastAPI with SSE streaming endpoint</span>
+        </div>
+        <div style="margin-top:14px; padding:8px 12px; background:var(--accent-glow); border-radius:6px;">
+          <p style="font-size:0.85rem; color:var(--accent);"><strong>Key:</strong> Be specific about ownership and formulas. Vague prompts produce vague agents.</p>
         </div>
       </div>
     </div>
   </div>
-  <p class="small mt-2">Full prompt: <span style="color:var(--accent);">docs/prompts/01_architecture_prompt.md</span></p>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE: Principle 1 — Decompose -->
+<!-- SLIDE: Principle 1 - Decompose -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="6">
   <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 8px;">
@@ -431,46 +523,52 @@
       <h2>Decompose the problem</h2>
     </div>
   </div>
-  <p class="subtitle" style="margin-bottom: 24px;">Don't ask one AI to do everything</p>
+  <p class="subtitle" style="margin-bottom: 18px;">Don't ask one AI to do everything</p>
 
-  <div class="vs-block">
-    <div class="vs-side">
-      <p class="vs-label bad">The single-prompt trap</p>
-      <div class="card" style="border-color: #7f1d1d44;">
-        <p style="font-size: 0.95rem;">One massive prompt tries to handle science, market sizing, comparators, and deal pricing all at once.</p>
-        <p class="small mt-1" style="color: var(--coral);">Result: mediocre at everything, good at nothing.</p>
-      </div>
+  <div class="flow mt-1">
+    <div class="flow-box highlight" style="min-width:160px;">
+      <p style="font-size:0.85rem; color:var(--fg-dim); margin-bottom:4px;">&#128203;</p>
+      <p style="font-size:0.95rem; color:var(--accent); font-weight:600;">Research Planner</p>
+      <p class="small">Parse input, extract asset</p>
+      <div style="margin-top:6px;"><span class="badge-model badge-haiku">Haiku 4.5</span></div>
     </div>
-    <div class="vs-divider"></div>
-    <div class="vs-side">
-      <p class="vs-label good">Specialized agents</p>
-      <div class="card" style="border-color: var(--accent-dim);">
-        <p style="font-size: 0.95rem;">Each agent has ONE clear job and does it well.</p>
-        <p class="small mt-1" style="color: var(--accent);">Like an assembly line vs. one person doing everything.</p>
-      </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box highlight" style="min-width:160px;">
+      <p style="font-size:0.85rem; color:var(--fg-dim); margin-bottom:4px;">&#128300;</p>
+      <p style="font-size:0.95rem; color:var(--accent); font-weight:600;">Science Agent</p>
+      <p class="small">MOA, trials, PTRS</p>
+      <div style="margin-top:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box highlight" style="min-width:160px;">
+      <p style="font-size:0.85rem; color:var(--fg-dim); margin-bottom:4px;">&#128200;</p>
+      <p style="font-size:0.95rem; color:var(--accent); font-weight:600;">Market Agent</p>
+      <p class="small">Comparators, peak sales</p>
+      <div style="margin-top:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box highlight" style="min-width:160px;">
+      <p style="font-size:0.85rem; color:var(--fg-dim); margin-bottom:4px;">&#129309;</p>
+      <p style="font-size:0.95rem; color:var(--accent); font-weight:600;">Synthesizer</p>
+      <p class="small">Buyers, deal price</p>
+      <div style="margin-top:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
     </div>
   </div>
 
-  <div class="flow mt-2">
-    <div class="flow-box highlight">
-      <p style="font-size: 0.95rem; color: var(--accent); font-weight: 600;">Science Agent</p>
-      <p class="small">What is this drug?</p>
-    </div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box highlight">
-      <p style="font-size: 0.95rem; color: var(--accent); font-weight: 600;">Market Agent</p>
-      <p class="small">How big is the opportunity?</p>
-    </div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box highlight">
-      <p style="font-size: 0.95rem; color: var(--accent); font-weight: 600;">Synthesizer</p>
-      <p class="small">Who will pay, and how much?</p>
+  <div class="two-col mt-2">
+    <div class="prompt-box user-input">
+      <span class="prompt-label">Example user input</span>Analyze TERN-701 for CML (chronic myeloid
+leukemia). What's the
+likely deal range and who would buy?</div>
+    <div class="callout" style="margin-top:0; display:flex; align-items:center; gap:12px;">
+      <span style="font-size:1.6rem;">&#128161;</span>
+      <p><strong>Why Haiku for parsing?</strong> It's 10x cheaper and faster. Structured extraction doesn't need deep reasoning &mdash; save Sonnet for the hard parts.</p>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 5: Principle 2 — Ownership -->
+<!-- SLIDE: Principle 2 - Ownership -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="7">
   <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 8px;">
@@ -480,33 +578,42 @@
       <h2>Define clear ownership</h2>
     </div>
   </div>
-  <p class="subtitle" style="margin-bottom: 24px;">Each agent should know exactly what it owns -- and what it doesn't</p>
+  <p class="subtitle" style="margin-bottom: 18px;">Each agent knows exactly what it owns &mdash; and what it doesn't</p>
 
   <div class="three-col">
-    <div class="card-accent">
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2rem; margin-bottom:8px;">&#128300;</div>
       <h3>Science Agent</h3>
-      <p style="font-size: 0.95rem;">Owns the asset's <strong>intrinsic properties</strong></p>
-      <p class="small mt-1">Mechanism, clinical data, regulatory status, trial design</p>
+      <p style="font-size:0.95rem;"><strong>Intrinsic properties</strong></p>
+      <p class="small mt-1">Mechanism, clinical data, regulatory status, PTRS</p>
+      <div style="margin-top:8px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
     </div>
-    <div class="card-accent">
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2rem; margin-bottom:8px;">&#128200;</div>
       <h3>Market Agent</h3>
-      <p style="font-size: 0.95rem;">Owns the <strong>competitive environment</strong></p>
-      <p class="small mt-1">Comparators, market size, standard of care, pricing benchmarks</p>
+      <p style="font-size:0.95rem;"><strong>Competitive environment</strong></p>
+      <p class="small mt-1">Comparators, market size, pricing benchmarks</p>
+      <div style="margin-top:8px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
     </div>
-    <div class="card-accent">
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2rem; margin-bottom:8px;">&#129309;</div>
       <h3>Synthesizer</h3>
-      <p style="font-size: 0.95rem;">Owns the <strong>buyer's perspective</strong></p>
-      <p class="small mt-1">Strategic fit, urgency, deal structure, valuation range</p>
+      <p style="font-size:0.95rem;"><strong>Buyer's perspective</strong></p>
+      <p class="small mt-1">Strategic fit, urgency, deal structure, price</p>
+      <div style="margin-top:8px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
     </div>
   </div>
 
-  <div class="callout mt-2">
-    <strong>Why this matters most:</strong> If there's confusion about who owns what, your prompts will be confused too. This is the single most important design decision you'll make.
-  </div>
+  <div class="prompt-box mt-2">
+    <span class="prompt-label">How we instruct each agent</span>The science agent should act like a senior
+biotech scientist — profile the asset, score
+each indication, but stay in its lane. It
+should NOT touch market sizing or buyers.
+Those belong to the next agents downstream.</div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 6: Principle 3 — AI reasons, code calculates -->
+<!-- SLIDE: Principle 3 - AI reasons, code calculates -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="8">
   <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 8px;">
@@ -516,44 +623,48 @@
       <h2>Let code do math, let AI do reasoning</h2>
     </div>
   </div>
-  <p class="subtitle" style="margin-bottom: 24px;">BD decisions are fast and high-stakes -- you need numbers you can trust in hours, not weeks</p>
 
-  <div class="two-col">
+  <div class="two-col mt-1">
     <div>
-      <div class="card" style="padding: 24px;">
-        <h3>Example: Probability of Success</h3>
-        <p style="font-size: 0.95rem; margin-bottom: 12px;">The AI's job is to <em>identify signals</em>:</p>
-        <ul>
-          <li style="font-size: 0.95rem;">"This is an orphan drug" (+7%)</li>
-          <li style="font-size: 0.95rem;">"Has breakthrough designation" (+5%)</li>
-          <li style="font-size: 0.95rem;">"Strong Phase 2 data" (+10%)</li>
-        </ul>
-        <p style="font-size: 0.95rem; margin-top: 12px;">Then <strong>code</strong> does the calculation:</p>
-        <div class="equation" style="margin-top: 8px;">
-          <span class="accent">13%</span> base + <span class="warm">7%</span> + <span class="warm">5%</span> + <span class="warm">10%</span> = <span class="accent">35%</span>
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
+        <div class="icon-circle" style="background:#f5f3ff; font-size:1.2rem;">&#129302;</div>
+        <div>
+          <p style="color:var(--fg-bright); font-weight:600;">AI identifies signals</p>
+          <p class="small">"This is an orphan drug" (+7%)</p>
+          <p class="small">"Has breakthrough designation" (+5%)</p>
+          <p class="small">"Strong Phase 2 data" (+10%)</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center;">
+        <div class="icon-circle" style="background:#ecfdf5; font-size:1.2rem;">&#128187;</div>
+        <div>
+          <p style="color:var(--fg-bright); font-weight:600;">Python calculates</p>
+          <div class="equation" style="margin-top:6px; font-size:1rem;">
+            <span class="accent">13%</span> base + <span class="warm">7%</span> + <span class="warm">5%</span> + <span class="warm">10%</span> = <span class="accent">35%</span>
+          </div>
         </div>
       </div>
     </div>
     <div>
-      <div class="card" style="padding: 24px; border-color: var(--accent-dim);">
-        <h3>The Rule</h3>
-        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--fg-bright); margin-bottom: 16px;">
-          AI <em>extracts</em> and <em>reasons</em>.<br>
-          Python <em>calculates</em>.
-        </p>
-        <p style="font-size: 0.95rem; color: var(--fg-dim);">
-          Think of it like a doctor and a lab: the doctor interprets the symptoms, the lab runs the numbers.
-        </p>
-        <div style="margin-top: 20px; padding: 12px 16px; background: var(--accent-glow); border-radius: 6px;">
-          <p style="font-size: 0.95rem; color: var(--accent);">This principle alone eliminates 50% of "the AI got the wrong number" complaints.</p>
-        </div>
-      </div>
+      <div class="prompt-box">
+        <span class="prompt-label">Science agent prompt</span>For each indication, look for de-risking
+signals like orphan drug status, breakthrough
+designation, strong Phase 2 data, etc.
+
+Just identify the signals — don't calculate
+the probability. The system has lookup tables
+that handle the math from there.</div>
+      <div class="prompt-box" style="margin-top:10px;">
+        <span class="prompt-label">Market agent prompt</span>Search for the current standard of care and
+leading competitors. Show why you picked that
+comparator. Let code derive the peak sales
+number — e.g. "$3.5B = Scemblix $2.8B x 1.25".</div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 7: Principle 4 — Show your work -->
+<!-- SLIDE: Principle 4 - Show your work -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="9">
   <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 8px;">
@@ -563,48 +674,66 @@
       <h2>Show your work</h2>
     </div>
   </div>
-  <p class="subtitle" style="margin-bottom: 24px;">Users don't trust a black box</p>
+  <p class="subtitle" style="margin-bottom: 16px;">Users don't trust a black box</p>
 
   <div class="two-col">
     <div>
-      <p style="font-size: 1rem; margin-bottom: 16px;">Every number traces back to a <strong>specific assumption</strong>:</p>
-      <div class="card" style="padding: 16px 20px; margin-bottom: 12px;">
-        <p class="small" style="color: var(--accent);">COMPARATOR</p>
-        <p style="font-size: 0.95rem;">"We identified Scemblix as the standard of care because it has the highest efficacy in the same patient population."</p>
-      </div>
-      <div class="card" style="padding: 16px 20px; margin-bottom: 12px;">
-        <p class="small" style="color: var(--accent);">PROBABILITY OF SUCCESS</p>
-        <p style="font-size: 0.95rem;">"Base 13%, adjusted to 32% because of these 5 clinical signals."</p>
-      </div>
-      <div class="card" style="padding: 16px 20px;">
-        <p class="small" style="color: var(--accent);">DEAL PRICE</p>
-        <p style="font-size: 0.95rem;">"$7B = $3.5B peak sales x 2.0x deal multiple"</p>
+      <p style="font-size:0.92rem; margin-bottom:12px;">Every number traces back to a <strong>specific assumption</strong>:</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="card" style="display:flex; gap:12px; align-items:center; padding:12px 16px;">
+          <span style="font-size:1.3rem;">&#128269;</span>
+          <div>
+            <p class="small" style="color:var(--accent); margin-bottom:2px;">COMPARATOR</p>
+            <p style="font-size:0.85rem;">"Scemblix &mdash; highest efficacy in same population"</p>
+          </div>
+        </div>
+        <div class="card" style="display:flex; gap:12px; align-items:center; padding:12px 16px;">
+          <span style="font-size:1.3rem;">&#127922;</span>
+          <div>
+            <p class="small" style="color:var(--accent); margin-bottom:2px;">PROBABILITY</p>
+            <p style="font-size:0.85rem;">"Base 13%, adjusted to 32% from 5 signals"</p>
+          </div>
+        </div>
+        <div class="card" style="display:flex; gap:12px; align-items:center; padding:12px 16px;">
+          <span style="font-size:1.3rem;">&#128176;</span>
+          <div>
+            <p class="small" style="color:var(--accent); margin-bottom:2px;">DEAL PRICE</p>
+            <p style="font-size:0.85rem;">"$7B = $3.5B peak sales x 2.0x multiple"</p>
+          </div>
+        </div>
       </div>
     </div>
     <div>
-      <div class="card-accent" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+      <div class="card-accent" style="height:100%; display:flex; flex-direction:column; justify-content:center;">
         <h3>The Dual-View Pattern</h3>
-        <p style="font-size: 0.95rem; margin-bottom: 16px;">Show two numbers side by side:</p>
-        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-          <div style="flex: 1; text-align: center; padding: 14px; background: var(--bg-slide); border-radius: 8px;">
-            <p class="small" style="margin-bottom: 4px;">Risk-adjusted</p>
-            <p class="big-num" style="font-size: 1.8rem;">$2.2B</p>
-            <p class="small">Your investment decision</p>
+        <p style="font-size:0.9rem; margin-bottom:14px;">Show two numbers side by side:</p>
+        <div style="display:flex; gap:16px; margin-bottom:16px;">
+          <div style="flex:1; text-align:center; padding:14px; background:var(--bg-card); border-radius:8px;">
+            <p class="small" style="margin-bottom:4px;">Risk-adjusted</p>
+            <p class="big-num" style="font-size:1.8rem;">$2.2B</p>
+            <p class="small">Investment decision</p>
           </div>
-          <div style="flex: 1; text-align: center; padding: 14px; background: var(--bg-slide); border-radius: 8px;">
-            <p class="small" style="margin-bottom: 4px;">If-succeed</p>
-            <p class="big-num" style="font-size: 1.8rem; color: var(--warm);">$7.0B</p>
-            <p class="small">What buyers negotiate on</p>
+          <div style="flex:1; text-align:center; padding:14px; background:var(--bg-card); border-radius:8px;">
+            <p class="small" style="margin-bottom:4px;">If-succeed</p>
+            <p class="big-num" style="font-size:1.8rem; color:var(--warm);">$7.0B</p>
+            <p class="small">Negotiation price</p>
           </div>
         </div>
-        <p style="font-size: 0.95rem;">Users can <strong>edit ANY assumption</strong> and recalculate instantly.</p>
+        <p style="font-size:0.9rem;">Users can <strong>edit ANY assumption</strong> and recalculate instantly.</p>
       </div>
     </div>
   </div>
+
+  <div class="prompt-box" style="margin-top:14px; max-width:600px;">
+    <span class="prompt-label">Synthesizer prompt</span>Identify which big pharma buyers have a strategic
+gap this asset fills. Use patent cliff timelines
+and flush-capital signals to score urgency. Show
+every assumption — the user should be able to
+edit any number and recalculate instantly.</div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 8: Principle 5 — Ground in real data -->
+<!-- SLIDE: Principle 5 - Ground in real data -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="10">
   <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 8px;">
@@ -614,79 +743,93 @@
       <h2>Ground in real data, not vibes</h2>
     </div>
   </div>
-  <p class="subtitle" style="margin-bottom: 24px;">If you inject a number into a prompt, the AI will echo it back</p>
 
   <div class="vs-block">
     <div class="vs-side">
-      <p class="vs-label bad">The anchoring problem</p>
-      <div class="card" style="border-color: #7f1d1d44;">
-        <p style="font-size: 0.95rem; margin-bottom: 10px;">Telling the AI: "Deals in this space are typically $2-5B"</p>
-        <p style="font-size: 0.95rem; color: var(--coral);">Result: the AI will ALWAYS output something between $2-5B, regardless of the actual asset.</p>
-        <p class="small mt-1">You've turned your AI into an expensive echo chamber.</p>
+      <p class="vs-label bad">&#10060; The anchoring problem</p>
+      <div class="card" style="border-color:#fecaca;">
+        <p style="font-size:0.92rem;">Telling the AI: "Deals are typically $2-5B"</p>
+        <p style="font-size:0.85rem; color:var(--coral); margin-top:8px;">Result: ALWAYS outputs $2-5B regardless of the asset.</p>
       </div>
+      <div class="prompt-box" style="margin-top:10px;">
+        <span class="prompt-label" style="color:var(--coral);">Bad vibe coding prompt</span>Tell the agent that deals in oncology are
+usually $2-5B. Price the asset accordingly.</div>
     </div>
     <div class="vs-divider"></div>
     <div class="vs-side">
-      <p class="vs-label good">Comparable reasoning</p>
-      <div class="card" style="border-color: var(--accent-dim);">
-        <p style="font-size: 0.95rem; margin-bottom: 10px;">Give it raw comparable transactions and let it <strong>reason about similarity</strong>.</p>
-        <p style="font-size: 0.95rem; color: var(--accent);">The AI assesses: "How similar is this asset to each comp?" -- a reasoning task, not a lookup.</p>
+      <p class="vs-label good">&#9989; Comparable reasoning</p>
+      <div class="card" style="border-color:var(--accent-dim);">
+        <p style="font-size:0.92rem;">Give it raw comparable transactions and let it <strong>reason about similarity</strong>.</p>
+        <p style="font-size:0.85rem; color:var(--accent); margin-top:8px;">The AI assesses: "How similar is this asset to each comp?"</p>
       </div>
+      <div class="prompt-box" style="margin-top:10px;">
+        <span class="prompt-label">Vibe coding prompt</span>Give the synthesizer a table of 27 real
+2025-2026 M&A deals. It should rank the
+top 3 most similar by mechanism, stage,
+and competitive dynamics, then derive the
+deal multiple from those comps.</div>
     </div>
-  </div>
-
-  <div class="callout mt-2">
-    <strong>Our approach:</strong> We use 27 real 2025-2026 M&A deals as reference points. The AI evaluates similarity across mechanism, stage, indication, and competitive dynamics. The data speaks; the AI interprets.
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 9: Live Demo Preview -->
+<!-- SLIDE: Live Demo Preview -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="11">
   <p class="section-label">Live Demo Preview</p>
   <h2>Let's see it in action</h2>
-  <p class="subtitle mt-1">Here's what happens when you type a drug name</p>
 
-  <div class="flow mt-2" style="flex-wrap: wrap; gap: 12px;">
-    <div class="flow-box" style="min-width: 140px;">
-      <p style="font-size: 0.9rem; color: var(--fg-bright);">Type a drug name</p>
+  <div class="flow mt-2" style="flex-wrap:wrap; gap:8px;">
+    <div class="flow-box" style="min-width:130px;">
+      <p style="font-size:1.2rem; margin-bottom:4px;">&#9997;&#65039;</p>
+      <p style="font-size:0.85rem; color:var(--fg-bright);">Type a drug name</p>
     </div>
     <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box" style="min-width: 140px;">
-      <p style="font-size: 0.9rem; color: var(--fg-bright);">Science profile</p>
+    <div class="flow-box" style="min-width:130px;">
+      <p style="font-size:1.2rem; margin-bottom:4px;">&#128300;</p>
+      <p style="font-size:0.85rem; color:var(--fg-bright);">Science profile</p>
     </div>
     <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box" style="min-width: 140px;">
-      <p style="font-size: 0.9rem; color: var(--fg-bright);">Comparator analysis</p>
+    <div class="flow-box" style="min-width:130px;">
+      <p style="font-size:1.2rem; margin-bottom:4px;">&#128200;</p>
+      <p style="font-size:0.85rem; color:var(--fg-bright);">Comparator analysis</p>
     </div>
     <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box" style="min-width: 140px;">
-      <p style="font-size: 0.9rem; color: var(--fg-bright);">Three-scenario waterfall</p>
+    <div class="flow-box" style="min-width:130px;">
+      <p style="font-size:1.2rem; margin-bottom:4px;">&#128202;</p>
+      <p style="font-size:0.85rem; color:var(--fg-bright);">Three-scenario waterfall</p>
     </div>
     <div class="flow-arrow">&rarr;</div>
-    <div class="flow-box" style="min-width: 140px;">
-      <p style="font-size: 0.9rem; color: var(--fg-bright);">Buyer mapping</p>
+    <div class="flow-box" style="min-width:130px;">
+      <p style="font-size:1.2rem; margin-bottom:4px;">&#129309;</p>
+      <p style="font-size:0.85rem; color:var(--fg-bright);">Buyer mapping</p>
     </div>
   </div>
 
-  <div class="mt-3">
+  <div class="mt-2">
     <h3>Three things to watch for</h3>
-    <div class="three-col" style="margin-top: 12px;">
-      <div class="card-accent">
-        <p style="font-size: 1.1rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 6px;">The Dual-View Waterfall</p>
-        <p style="font-size: 0.9rem;">Risk-adjusted and if-succeed scenarios side by side, with the gap telling the story.</p>
+    <div class="three-col" style="margin-top:12px;">
+      <div class="card-accent" style="text-align:center; padding:18px;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">&#128202;</div>
+        <p style="font-size:1rem; color:var(--fg-bright); font-weight:600; margin-bottom:6px;">Dual-View Waterfall</p>
+        <p style="font-size:0.85rem;">Risk-adjusted vs. if-succeed side by side</p>
       </div>
-      <div class="card-accent">
-        <p style="font-size: 1.1rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 6px;">The Assumptions Panel</p>
-        <p style="font-size: 0.9rem;">Every number is editable. Change one assumption and the entire model recalculates.</p>
+      <div class="card-accent" style="text-align:center; padding:18px;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">&#9881;&#65039;</div>
+        <p style="font-size:1rem; color:var(--fg-bright); font-weight:600; margin-bottom:6px;">Assumptions Panel</p>
+        <p style="font-size:0.85rem;">Edit any number &mdash; model recalculates live</p>
       </div>
-      <div class="card-accent">
-        <p style="font-size: 1.1rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 6px;">Buyer Urgency Mapping</p>
-        <p style="font-size: 0.9rem;">Which companies have the biggest strategic gap? That's who pays a premium.</p>
+      <div class="card-accent" style="text-align:center; padding:18px;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">&#127919;</div>
+        <p style="font-size:1rem; color:var(--fg-bright); font-weight:600; margin-bottom:6px;">Buyer Urgency</p>
+        <p style="font-size:0.85rem;">Who has the biggest strategic gap?</p>
       </div>
     </div>
   </div>
+
+  <div class="prompt-box user-input mt-2" style="max-width:500px;">
+    <span class="prompt-label">Try this in the demo</span>Analyze TERN-701 for CML. What's the
+likely deal range and who would buy?</div>
 </div>
 
 <!-- ============================================================ -->
@@ -696,38 +839,61 @@
   <p class="section-label">Vibe Coding</p>
   <h2>Prompt 2: Frontend UI</h2>
   <p class="subtitle">One prompt builds the entire React interface</p>
-  <div class="two-col mt-2">
+
+  <div class="two-col mt-1">
     <div>
       <div class="card" style="padding:16px; border-left:3px solid var(--warm);">
         <h3 style="font-size:0.85rem;">What the prompt describes</h3>
-        <ul style="font-size:0.85rem;">
-          <li>Welcome screen with hero, value props, 4 use-case cards</li>
-          <li>Filter sidebar with phase/TA/year chip selectors</li>
-          <li>SSE streaming chat with progress indicators</li>
-          <li>Dual-view valuation waterfall (purple risk-adj / amber if-succeed)</li>
-          <li>Editable assumptions panel with recalculate</li>
-          <li>The exact API response shape to consume</li>
-        </ul>
+        <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 10px; font-size:0.85rem; margin-top:8px;">
+          <span style="color:var(--warm);">&#9670;</span><span>Welcome screen with hero + use-case cards</span>
+          <span style="color:var(--warm);">&#9670;</span><span>Filter sidebar with chip selectors</span>
+          <span style="color:var(--warm);">&#9670;</span><span>SSE streaming chat with progress</span>
+          <span style="color:var(--warm);">&#9670;</span><span>Dual-view valuation waterfall</span>
+          <span style="color:var(--warm);">&#9670;</span><span>Editable assumptions panel</span>
+          <span style="color:var(--warm);">&#9670;</span><span>API response shape to consume</span>
+        </div>
       </div>
+      <div class="prompt-box" style="margin-top:12px;">
+        <span class="prompt-label">Example from the prompt</span>Build a React + Tailwind frontend that
+consumes the /analyze/stream SSE endpoint.
+
+Show a dual-view waterfall chart:
+- Purple bars = risk-adjusted values
+- Amber bars  = if-succeed values
+
+Include an AssumptionsPanel where users
+can edit PTRS, verdict, peak sales and
+hit "Recalculate" to call /recalculate.</div>
     </div>
     <div>
       <div class="card" style="padding:16px;">
         <h3 style="font-size:0.85rem;">Why describe the UI to AI?</h3>
-        <p style="font-size:0.85rem; margin-bottom:8px;">You're not writing CSS -- you're describing <strong>what the user sees and does</strong>.</p>
-        <ul style="font-size:0.85rem;">
-          <li>Describe the <strong>layout structure</strong> (sidebar + main)</li>
-          <li>Describe each <strong>component's purpose</strong></li>
-          <li>Describe the <strong>data shape</strong> from the API</li>
-          <li>Describe <strong>interactions</strong> (edit, recalculate)</li>
-        </ul>
+        <p style="font-size:0.85rem; margin-bottom:10px;">You're not writing CSS &mdash; you're describing <strong>what the user sees and does</strong>.</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:1.1rem;">&#128209;</span>
+            <span style="font-size:0.85rem;">Describe <strong>layout structure</strong></span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:1.1rem;">&#128268;</span>
+            <span style="font-size:0.85rem;">Describe each <strong>component's purpose</strong></span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:1.1rem;">&#128230;</span>
+            <span style="font-size:0.85rem;">Describe the <strong>data shape</strong> from API</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:1.1rem;">&#128070;</span>
+            <span style="font-size:0.85rem;">Describe <strong>interactions</strong> (click, edit, submit)</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <p class="small mt-2">Full prompt: <span style="color:var(--accent);">docs/prompts/02_ui_prompt.md</span></p>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 10: Validation -->
+<!-- SLIDE: Validation -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="13">
   <p class="section-label">Validation</p>
@@ -736,36 +902,43 @@
 
   <div class="two-col mt-2">
     <div>
-      <div class="card" style="padding: 28px;">
+      <div class="card" style="padding:28px; text-align:center;">
         <h3>Case: TERN-701</h3>
-        <div style="display: flex; gap: 28px; margin-top: 16px; margin-bottom: 16px;">
-          <div style="text-align: center;">
-            <p class="small" style="margin-bottom: 6px;">System estimate<br>(if-succeed)</p>
+        <div style="display:flex; gap:28px; margin-top:16px; margin-bottom:16px; justify-content:center;">
+          <div>
+            <p class="small" style="margin-bottom:6px;">System estimate<br>(if-succeed)</p>
             <p class="big-num">$5-7B</p>
           </div>
-          <div style="text-align: center;">
-            <p class="small" style="margin-bottom: 6px;">Actual deal<br>price</p>
-            <p class="big-num" style="color: var(--warm);">$6.7B</p>
+          <div style="display:flex; align-items:center; font-size:1.5rem; color:var(--fg-dim);">vs</div>
+          <div>
+            <p class="small" style="margin-bottom:6px;">Actual deal<br>price</p>
+            <p class="big-num" style="color:var(--warm);">$6.7B</p>
           </div>
         </div>
-        <p style="font-size: 0.95rem;">The if-succeed scenario tracks real deal prices -- because <strong>buyers pay for the success case</strong>.</p>
+        <p style="font-size:0.9rem;">Buyers pay for the <strong>success case</strong> &mdash; the if-succeed scenario tracks real deal prices.</p>
       </div>
     </div>
     <div>
-      <div class="card-accent" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+      <div class="card-accent" style="height:100%; display:flex; flex-direction:column; justify-content:center;">
         <h3>Two numbers, two purposes</h3>
-        <div style="margin: 16px 0;">
-          <p style="font-size: 0.95rem; margin-bottom: 12px;">
-            <strong>Risk-adjusted value</strong><br>
-            <span style="color: var(--fg-dim);">For your internal investment committee. Accounts for the probability the drug never makes it.</span>
-          </p>
-          <p style="font-size: 0.95rem;">
-            <strong>If-succeed value</strong><br>
-            <span style="color: var(--fg-dim);">The price a buyer negotiates on. This is the number that shows up in term sheets.</span>
-          </p>
+        <div style="margin:14px 0; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div class="icon-circle-sm" style="background:#eff6ff;">&#128202;</div>
+            <div>
+              <p style="font-size:0.9rem; color:var(--fg-bright); font-weight:600;">Risk-adjusted</p>
+              <p class="small">For your investment committee</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div class="icon-circle-sm" style="background:#fffbeb;">&#128176;</div>
+            <div>
+              <p style="font-size:0.9rem; color:var(--warm); font-weight:600;">If-succeed</p>
+              <p class="small">The price on the term sheet</p>
+            </div>
+          </div>
         </div>
-        <div style="padding: 12px 16px; background: var(--bg-slide); border-radius: 6px;">
-          <p style="font-size: 0.95rem; color: var(--accent);">The gap between the two numbers tells you how much risk the buyer is absorbing.</p>
+        <div style="padding:10px 14px; background:var(--bg-card); border-radius:6px;">
+          <p style="font-size:0.85rem; color:var(--accent);">The gap tells you how much risk the buyer absorbs.</p>
         </div>
       </div>
     </div>
@@ -778,67 +951,92 @@
 <div class="slide" data-slide="14">
   <p class="section-label">Vibe Coding</p>
   <h2>Prompt 3: Validate against real deals</h2>
-  <p class="subtitle">Test your system against known deal prices -- without hardcoding answers</p>
-  <div class="two-col mt-2">
+  <p class="subtitle">Test your system against known prices &mdash; without hardcoding answers</p>
+
+  <div class="two-col mt-1">
     <div>
       <div class="card" style="padding:16px; border-left:3px solid var(--coral);">
         <h3 style="font-size:0.85rem;">4 blind test cases</h3>
-        <ul style="font-size:0.85rem;">
-          <li><strong>TERN-701</strong> -- displacement archetype (Merck $6.7B)</li>
-          <li><strong>Centessa ORX750</strong> -- category creation + CVR ($7.8B)</li>
-          <li><strong>Akero/Novo</strong> -- emerging TA, MASH ($5.2B)</li>
-          <li><strong>Chimerix/Jazz</strong> -- rare disease guard ($935M)</li>
-        </ul>
-        <p style="font-size:0.85rem; margin-top:8px; color:var(--fg-dim);">Each test specifies what the agent should discover on its own.</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span style="color:var(--coral); font-weight:700; min-width:16px;">1</span>
+            <span><strong>TERN-701</strong> &mdash; displacement (Merck $6.7B)</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span style="color:var(--coral); font-weight:700; min-width:16px;">2</span>
+            <span><strong>Centessa ORX750</strong> &mdash; category creation ($7.8B)</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span style="color:var(--coral); font-weight:700; min-width:16px;">3</span>
+            <span><strong>Akero/Novo</strong> &mdash; emerging TA, MASH ($5.2B)</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span style="color:var(--coral); font-weight:700; min-width:16px;">4</span>
+            <span><strong>Chimerix/Jazz</strong> &mdash; rare disease ($935M)</span>
+          </div>
+        </div>
       </div>
+      <div class="prompt-box" style="margin-top:12px;">
+        <span class="prompt-label">Example test criteria</span>TERN-701: system must discover Scemblix as
+comparator, identify CML displacement thesis,
+and produce if-succeed value within 30% of
+the actual $6.7B Merck deal price.</div>
     </div>
     <div>
       <div class="card" style="padding:16px;">
         <h3 style="font-size:0.85rem;">What validation catches</h3>
-        <ul style="font-size:0.85rem;">
-          <li>Wrong comparator -- search query too broad</li>
-          <li>Wrong differentiation -- rubric thresholds off</li>
-          <li>Price too low -- deal multiple needs tuning</li>
-          <li>Price too high -- capture rate too aggressive</li>
-        </ul>
-        <div style="margin-top:8px; padding:8px 12px; background:var(--accent-glow); border-radius:6px;">
-          <p style="font-size:0.85rem; color:var(--accent);"><strong>Target:</strong> If-succeed within 30% of actual deal price</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span>&#128269;</span><span>Wrong comparator &rarr; search query too broad</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span>&#9878;&#65039;</span><span>Wrong verdict &rarr; rubric thresholds off</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span>&#128200;</span><span>Price too low &rarr; deal multiple needs tuning</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.85rem;">
+            <span>&#128201;</span><span>Price too high &rarr; capture rate too aggressive</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:8px 12px; background:var(--accent-glow); border-radius:6px; display:flex; gap:8px; align-items:center;">
+          <span>&#127919;</span>
+          <p style="font-size:0.85rem; color:var(--accent);"><strong>Target:</strong> Strategic if-succeed within 30% of actual deal price</p>
         </div>
       </div>
     </div>
   </div>
-  <p class="small mt-2">Full prompt: <span style="color:var(--accent);">docs/prompts/03_validation_prompt.md</span></p>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 11: Design Thinking Exercise -->
+<!-- SLIDE: Design Thinking Exercise -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="15">
   <p class="section-label">Your Turn</p>
   <h2>Design thinking exercise</h2>
-  <p class="subtitle mt-1">Think about YOUR domain -- what repeatable analysis could you decompose?</p>
+  <p class="subtitle mt-1">Think about YOUR domain &mdash; what repeatable analysis could you decompose?</p>
 
   <div class="three-col mt-2">
-    <div class="card-accent">
-      <p style="font-size: 2rem; color: var(--accent-dim); font-weight: 800; margin-bottom: 4px;">1</p>
-      <p style="font-size: 1.05rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 8px;">What steps does an expert follow?</p>
-      <p style="font-size: 0.9rem; color: var(--fg-dim);">This becomes your agent decomposition. Each step is a potential agent.</p>
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2.2rem; margin-bottom:8px;">&#128268;</div>
+      <p style="font-size:1.05rem; color:var(--fg-bright); font-weight:600; margin-bottom:8px;">What steps does an expert follow?</p>
+      <p style="font-size:0.85rem; color:var(--fg-dim);">Each step is a potential agent</p>
     </div>
-    <div class="card-accent">
-      <p style="font-size: 2rem; color: var(--accent-dim); font-weight: 800; margin-bottom: 4px;">2</p>
-      <p style="font-size: 1.05rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 8px;">What data does each step need?</p>
-      <p style="font-size: 0.9rem; color: var(--fg-dim);">This becomes your search strategy. Where does each agent find its information?</p>
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2.2rem; margin-bottom:8px;">&#128451;&#65039;</div>
+      <p style="font-size:1.05rem; color:var(--fg-bright); font-weight:600; margin-bottom:8px;">What data does each step need?</p>
+      <p style="font-size:0.85rem; color:var(--fg-dim);">This becomes your search strategy</p>
     </div>
-    <div class="card-accent">
-      <p style="font-size: 2rem; color: var(--accent-dim); font-weight: 800; margin-bottom: 4px;">3</p>
-      <p style="font-size: 1.05rem; color: var(--fg-bright); font-weight: 600; margin-bottom: 8px;">What assumptions should be editable?</p>
-      <p style="font-size: 0.9rem; color: var(--fg-dim);">This becomes your transparency layer. Users trust what they can inspect and adjust.</p>
+    <div class="card-accent" style="text-align:center; padding:20px;">
+      <div style="font-size:2.2rem; margin-bottom:8px;">&#9881;&#65039;</div>
+      <p style="font-size:1.05rem; color:var(--fg-bright); font-weight:600; margin-bottom:8px;">What should be editable?</p>
+      <p style="font-size:0.85rem; color:var(--fg-dim);">This becomes your transparency layer</p>
     </div>
   </div>
 
   <div class="mt-2">
     <h3>Other domains where this works</h3>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
       <span class="badge">Investment due diligence</span>
       <span class="badge">Clinical trial design</span>
       <span class="badge">Regulatory filing review</span>
@@ -850,7 +1048,7 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 12: Hands-on Activity -->
+<!-- SLIDE: Hands-on Activity -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="16">
   <p class="section-label">Hands-on Activity</p>
@@ -858,132 +1056,143 @@
 
   <div class="two-col mt-2">
     <div>
-      <div class="card" style="padding: 28px; border-color: var(--accent-dim);">
+      <div class="card" style="padding:24px; border-color:var(--accent-dim); text-align:center;">
         <h3>Connect</h3>
-        <div class="equation" style="font-size: 1.3rem; letter-spacing: 0;">
+        <div class="equation" style="font-size:1.3rem; letter-spacing:0;">
           http://localhost:5173
         </div>
-        <p class="small mt-1" style="text-align: center;">Open this URL in your browser</p>
       </div>
 
-      <div class="card mt-2" style="padding: 28px;">
-        <h3>Example queries to try</h3>
-        <ul>
-          <li style="font-size: 0.95rem;">A late-stage oncology asset (e.g., "TERN-701 CML")</li>
-          <li style="font-size: 0.95rem;">A rare disease therapy (e.g., "gene therapy for SMA")</li>
-          <li style="font-size: 0.95rem;">A preclinical asset with limited data</li>
-        </ul>
+      <div class="mt-2" style="display:flex; flex-direction:column; gap:8px;">
+        <p class="small" style="margin-bottom:4px; color:var(--accent);">EXAMPLE QUERIES TO TRY:</p>
+        <div class="prompt-box user-input" style="margin-top:0;">Analyze TERN-701 for CML</div>
+        <div class="prompt-box user-input" style="margin-top:0;">Evaluate Centessa ORX750 for narcolepsy
+and insomnia</div>
+        <div class="prompt-box user-input" style="margin-top:0;">Scan Phase 2 oncology assets</div>
       </div>
     </div>
     <div>
-      <div class="card-accent" style="padding: 28px;">
+      <div class="card-accent" style="padding:24px;">
         <h3>Things to explore</h3>
-        <ul>
-          <li style="font-size: 0.95rem;"><strong>Change a PTRS assumption</strong> and watch the valuation recalculate</li>
-          <li style="font-size: 0.95rem;"><strong>Compare two assets</strong> in the same therapeutic area</li>
-          <li style="font-size: 0.95rem;"><strong>Try a preclinical asset</strong> with limited public data -- see how the system handles uncertainty</li>
-        </ul>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="font-size:1.3rem;">&#9881;&#65039;</span>
+            <p style="font-size:0.9rem;"><strong>Change a PTRS assumption</strong> &mdash; watch the valuation recalculate</p>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="font-size:1.3rem;">&#9878;&#65039;</span>
+            <p style="font-size:0.9rem;"><strong>Compare two assets</strong> in the same therapeutic area</p>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="font-size:1.3rem;">&#128300;</span>
+            <p style="font-size:0.9rem;"><strong>Try a preclinical asset</strong> &mdash; see how it handles uncertainty</p>
+          </div>
+        </div>
       </div>
 
       <div class="callout mt-2">
-        <strong>After trying it, think about:</strong> What would YOU build with this framework? What repeatable analysis in your work could become an AI-powered tool?
+        <strong>After trying it:</strong> What would YOU build with this framework? What repeatable analysis in your work could become an AI tool?
       </div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 13: Key Takeaways -->
+<!-- SLIDE: Key Takeaways -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="17">
   <p class="section-label">Key Takeaways</p>
   <h2>Five principles for building AI decision tools</h2>
-  <p class="subtitle">These work for any domain, not just pharma</p>
 
-  <div style="margin-top: 20px;">
-    <ul>
-      <li><strong>Decompose</strong> <span style="color: var(--fg-dim);">-- One agent, one job. Don't ask a single AI to do everything.</span></li>
-      <li><strong>Own</strong> <span style="color: var(--fg-dim);">-- Clear boundaries prevent prompt confusion. Define who owns what.</span></li>
-      <li><strong>Compute</strong> <span style="color: var(--fg-dim);">-- AI reasons, code calculates. Never ask AI to do arithmetic.</span></li>
-      <li><strong>Transparency</strong> <span style="color: var(--fg-dim);">-- Show every assumption. Make it editable. Trust comes from inspectability.</span></li>
-      <li><strong>Ground</strong> <span style="color: var(--fg-dim);">-- Real data beats hardcoded ranges. Let the AI reason over evidence, not echo your biases.</span></li>
-    </ul>
+  <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-top:24px;">
+    <div class="card" style="text-align:center; padding:18px; border-top:3px solid var(--accent);">
+      <div style="font-size:1.8rem; margin-bottom:8px;">&#128268;</div>
+      <p style="color:var(--accent); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Decompose</p>
+      <p class="small">One agent, one job</p>
+    </div>
+    <div class="card" style="text-align:center; padding:18px; border-top:3px solid var(--accent);">
+      <div style="font-size:1.8rem; margin-bottom:8px;">&#128204;</div>
+      <p style="color:var(--accent); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Own</p>
+      <p class="small">Clear boundaries</p>
+    </div>
+    <div class="card" style="text-align:center; padding:18px; border-top:3px solid var(--accent);">
+      <div style="font-size:1.8rem; margin-bottom:8px;">&#128187;</div>
+      <p style="color:var(--accent); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Compute</p>
+      <p class="small">AI reasons, code calculates</p>
+    </div>
+    <div class="card" style="text-align:center; padding:18px; border-top:3px solid var(--accent);">
+      <div style="font-size:1.8rem; margin-bottom:8px;">&#128269;</div>
+      <p style="color:var(--accent); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Transparent</p>
+      <p class="small">Show every assumption</p>
+    </div>
+    <div class="card" style="text-align:center; padding:18px; border-top:3px solid var(--accent);">
+      <div style="font-size:1.8rem; margin-bottom:8px;">&#127919;</div>
+      <p style="color:var(--accent); font-weight:700; font-size:0.9rem; margin-bottom:4px;">Ground</p>
+      <p class="small">Real data, not vibes</p>
+    </div>
   </div>
 
-  <div class="callout mt-2">
-    <strong>The meta-lesson:</strong> The hardest part of building AI tools isn't the technology -- it's the design thinking. Knowing your domain well enough to decompose it is the real superpower.
+  <div class="callout mt-3">
+    <strong>The meta-lesson:</strong> The hardest part isn't the technology &mdash; it's the design thinking. Knowing your domain well enough to decompose it is the real superpower.
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 14: Enterprise Path -->
+<!-- SLIDE: Enterprise Path -->
 <!-- ============================================================ -->
 <div class="slide" data-slide="18" style="padding-top:40px; padding-bottom:40px;">
   <p class="section-label">The Bigger Picture</p>
   <h2 style="font-size:1.5rem; margin-bottom:0.2em;">AI agents across the pharma value chain</h2>
-  <p class="subtitle" style="font-size:0.88rem;">Every business function has repeatable analysis that AI can accelerate</p>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:14px;">
-    <div class="flow-box" style="border-top:3px solid var(--accent); padding:10px 12px;">
-      <h3 style="font-size:0.8rem; margin-bottom:4px;">Business Development</h3>
-      <ul style="margin-left:0; font-size:0.8rem;">
-        <li>Asset valuation (today's demo)</li>
-        <li>Pipeline scanning and ranking</li>
-        <li>Deal comp benchmarking</li>
-        <li>Buyer urgency mapping</li>
-      </ul>
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:18px;">
+    <div class="card" style="border-top:3px solid var(--accent); padding:14px 16px; text-align:center;">
+      <div style="font-size:1.6rem; margin-bottom:6px;">&#128176;</div>
+      <h3 style="font-size:0.8rem; margin-bottom:6px;">Business Development</h3>
+      <p class="small">Asset valuation &bull; Pipeline scanning &bull; Deal benchmarking &bull; Buyer mapping</p>
     </div>
-    <div class="flow-box" style="border-top:3px solid #34d399; padding:10px 12px;">
-      <h3 style="font-size:0.8rem; margin-bottom:4px;">Clinical Development</h3>
-      <ul style="margin-left:0; font-size:0.8rem;">
-        <li>Trial design optimization</li>
-        <li>Site selection intelligence</li>
-        <li>Competitive trial monitoring</li>
-        <li>Regulatory pathway analysis</li>
-      </ul>
+    <div class="card" style="border-top:3px solid #34d399; padding:14px 16px; text-align:center;">
+      <div style="font-size:1.6rem; margin-bottom:6px;">&#128138;</div>
+      <h3 style="font-size:0.8rem; margin-bottom:6px; color:#059669;">Clinical Development</h3>
+      <p class="small">Trial design &bull; Site selection &bull; Competitive monitoring &bull; Regulatory pathway</p>
     </div>
-    <div class="flow-box" style="border-top:3px solid #f59e0b; padding:10px 12px;">
-      <h3 style="font-size:0.8rem; margin-bottom:4px;">Commercial Strategy</h3>
-      <ul style="margin-left:0; font-size:0.8rem;">
-        <li>Market access and pricing</li>
-        <li>KOL identification</li>
-        <li>Launch readiness assessment</li>
-        <li>Competitive response planning</li>
-      </ul>
+    <div class="card" style="border-top:3px solid var(--warm); padding:14px 16px; text-align:center;">
+      <div style="font-size:1.6rem; margin-bottom:6px;">&#128640;</div>
+      <h3 style="font-size:0.8rem; margin-bottom:6px; color:var(--warm);">Commercial Strategy</h3>
+      <p class="small">Market access &bull; KOL identification &bull; Launch readiness &bull; Competitive response</p>
     </div>
   </div>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
-    <div class="callout" style="border-left:3px solid var(--accent); padding:10px 12px;">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+    <div class="callout" style="border-left:3px solid var(--accent); padding:12px 14px;">
       <h3 style="font-size:0.8rem; margin-bottom:4px;">The pattern is always the same</h3>
-      <p style="font-size:0.8rem;">Decompose the expert workflow. Give each agent one job. Let code do math. Show your work. Ground in real data. The 5 principles apply whether you're pricing a deal or designing a trial.</p>
+      <p style="font-size:0.82rem;">Decompose the expert workflow. Give each agent one job. Let code do math. Show your work. Ground in real data.</p>
     </div>
-    <div class="callout" style="border-left:3px solid #f59e0b; padding:10px 12px;">
+    <div class="callout" style="border-left:3px solid var(--warm); padding:12px 14px;">
       <h3 style="font-size:0.8rem; margin-bottom:4px;">From tool to process transformation</h3>
-      <p style="font-size:0.8rem;">The real value isn't the tool -- it's changing how teams collaborate. When analysis takes 2 minutes instead of 2 weeks, the conversation shifts from "what are the numbers?" to "what should we do about them?"</p>
+      <p style="font-size:0.82rem;">When analysis takes 2 minutes instead of 2 weeks, teams shift from "what are the numbers?" to "what should we do?"</p>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- SLIDE 15: Q&A -->
+<!-- SLIDE: Q&A -->
 <!-- ============================================================ -->
-<div class="slide center-content" data-slide="19" style="text-align: center;">
-  <h2 style="font-size: 2.4rem; margin-bottom: 0.15em;">Questions?</h2>
-  <div class="title-accent" style="margin-top: 16px;"></div>
-  <p class="meta" style="margin-top: 1.5em; font-size: 1.1rem;">Junchi Lu &nbsp;|&nbsp; SAPA SCS AI Workshop &nbsp;|&nbsp; May 2, 2026</p>
+<div class="slide center-content" data-slide="19" style="text-align:center;">
+  <h2 style="font-size:2.4rem; margin-bottom:0.15em;">Questions?</h2>
+  <div class="title-accent" style="margin-top:16px;"></div>
+  <p class="meta" style="margin-top:1.5em; font-size:1.1rem;">Junchi Lu &nbsp;|&nbsp; SAPA SCS AI Workshop &nbsp;|&nbsp; May 2, 2026</p>
 
-  <div class="mt-3" style="display: inline-block;">
-    <div class="card" style="padding: 24px 40px; text-align: center;">
+  <div class="mt-3" style="display:inline-block;">
+    <div class="card" style="padding:24px 40px; text-align:center;">
       <h3>Resources</h3>
-      <p style="font-size: 1rem; margin-top: 8px;">
-        GitHub: <span style="color: var(--accent);">github.com/codingnoodle/lifescience-bd-intelligence</span>
+      <p style="font-size:1rem; margin-top:8px;">
+        GitHub: <span style="color:var(--accent);">github.com/codingnoodle/lifescience-bd-intelligence</span>
       </p>
-      <p style="font-size: 0.9rem; color: var(--fg-dim); margin-top: 8px;">
+      <p style="font-size:0.9rem; color:var(--fg-dim); margin-top:8px;">
         Slides, source code, and setup instructions
       </p>
-      <p style="font-size: 1rem; margin-top: 12px;">
-        <span style="color: var(--accent);">junchi.lu@sapaweb.org</span>
+      <p style="font-size:1rem; margin-top:12px;">
+        <span style="color:var(--accent);">junchi.lu@sapaweb.org</span>
       </p>
     </div>
   </div>
