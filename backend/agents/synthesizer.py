@@ -146,13 +146,27 @@ c. Strategic deal price (what the winning bidder actually pays):
    The if_success strategic value is what a motivated buyer pays. Real deal prices track this number.
    The risk_adjusted number shows the expected value of the acquisition.
 
-STEP 4 — CVR STRUCTURE DETECTION
-If the asset has significant early-stage platform components (preclinical or Phase 1 assets alongside
-the lead program) OR material approval-path milestones not yet achieved, split the strategic scenario:
-- predicted_upfront_bn: base value the buyer pays at signing
-- predicted_cvr_bn: contingent value rights tied to milestones (typically 20-40% of total deal value)
-- The CVR captures PTRS-discounted value of the uncertain milestones.
-If no CVR is warranted, set predicted_cvr_bn to 0 and predicted_upfront_bn equals the strategic value.
+STEP 4 — DEAL ECONOMICS: UPFRONT + MILESTONE BREAKDOWN
+Output both upfront and total deal value with milestone structure:
+
+a. predicted_upfront_bn: Cash at signing. The risk-discounted amount paid regardless of outcome.
+   - For M&A (acquiring entire company/asset): upfront ≈ strategic if_success_bn (buyer takes all risk)
+   - For licensing (partnering a program): upfront = 25-50% of total, buyer de-risks via milestones
+
+b. Milestone breakdown (non-upfront payments, contingent on success):
+   - regulatory_milestones_bn: payments at Phase 2/3 start, FDA filing, FDA approval per indication.
+     Typical: $200-500M per indication × number of indications in licensed territory.
+   - commercial_milestones_bn: payments at sales thresholds ($500M, $1B, $2B annual sales).
+     Typical: $300-800M total across tiers.
+   - royalty_npv_bn: NPV of royalty stream (15-25% of net sales over patent life).
+     Typical: peak_sales_with_displacement_bn × royalty_rate × revenue_multiplier × npv_discount.
+
+c. predicted_total_bn = upfront + regulatory_milestones + commercial_milestones + royalty_npv.
+   This is the headline "total deal value" reported in press releases.
+
+d. Determine deal_structure: "M&A" if asset is a standalone company or full platform acquisition.
+   "licensing" if it's a specific program from a larger company (ex-region rights, co-development, etc.).
+   For M&A: milestones are small (CVR/earnout only). For licensing: milestones are 50-75% of total.
 
 STEP 5 — COMPOSITE SCORE AND RECOMMENDATION
 composite_score = 0.60 × mean(science_scores) + 0.40 × mean(market_scores)
@@ -214,9 +228,15 @@ Return ONLY valid JSON (no markdown fences):
     "if_success_bn": 7.0,
     "risk_adjusted_bn": 2.1,
     "deal_multiple": 2.0,
+    "deal_structure": "M&A",
     "predicted_upfront_bn": 5.5,
-    "predicted_cvr_bn": 1.5,
-    "derivation_string": "Strategic: $3.5B peak × 2.0x deal multiple = $7.0B (base 1.5x Ph1/2 + 0.3x urgency + 0.2x bidding); risk-adj $2.1B"
+    "milestones": {{
+      "regulatory_milestones_bn": 0.8,
+      "commercial_milestones_bn": 0.5,
+      "royalty_npv_bn": 0.0
+    }},
+    "predicted_total_bn": 6.8,
+    "derivation_string": "Strategic: $3.5B peak × 2.0x deal multiple = $7.0B (base 1.5x Ph1/2 + 0.3x urgency + 0.2x bidding); M&A structure: $5.5B upfront + $0.8B regulatory + $0.5B commercial = $6.8B total; risk-adj $2.1B"
   }}
 }}
 
@@ -365,5 +385,5 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
             "bidding_tension": {"score": 0, "premium": 0, "signals": [], "confidence": "low"},
             "scenario_standalone": {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "Parse error — fallback"},
             "scenario_displacement": {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "Parse error — fallback"},
-            "scenario_strategic": {"if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0, "predicted_upfront_bn": 0, "predicted_cvr_bn": 0, "derivation_string": "Parse error — fallback"},
+            "scenario_strategic": {"if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0, "deal_structure": "unknown", "predicted_upfront_bn": 0, "milestones": {"regulatory_milestones_bn": 0, "commercial_milestones_bn": 0, "royalty_npv_bn": 0}, "predicted_total_bn": 0, "derivation_string": "Parse error — fallback"},
         }

@@ -150,11 +150,19 @@ def _indication_to_out(ind: dict) -> dict:
 def _scenario_to_out(s: dict | None) -> dict | None:
     if not s:
         return None
+    milestones = s.get("milestones", {})
     return {
         "ifSuccessBn": s.get("if_success_bn"),
         "riskAdjustedBn": s.get("risk_adjusted_bn"),
         "dealMultiple": s.get("deal_multiple"),
+        "dealStructure": s.get("deal_structure"),
         "predictedUpfrontBn": s.get("predicted_upfront_bn"),
+        "milestones": {
+            "regulatoryMilestonesBn": milestones.get("regulatory_milestones_bn"),
+            "commercialMilestonesBn": milestones.get("commercial_milestones_bn"),
+            "royaltyNpvBn": milestones.get("royalty_npv_bn"),
+        } if milestones else None,
+        "predictedTotalBn": s.get("predicted_total_bn"),
         "predictedCvrBn": s.get("predicted_cvr_bn"),
         "derivationString": s.get("derivation_string"),
     }

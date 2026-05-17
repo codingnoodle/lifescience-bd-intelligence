@@ -165,8 +165,10 @@ function ComparisonTable({ result }) {
   const succeedStrategic = scenarioStrategic.ifSuccessBn;
 
   const predictedUpfront = scenarioStrategic.predictedUpfrontBn;
-  const predictedCvr = scenarioStrategic.predictedCvrBn ?? 0;
-  const dealTotal = predictedUpfront != null ? predictedUpfront + predictedCvr : null;
+  const predictedTotal = scenarioStrategic.predictedTotalBn;
+  const dealStructure = scenarioStrategic.dealStructure;
+  const milestones = scenarioStrategic.milestones;
+  const dealTotal = predictedTotal ?? (predictedUpfront != null ? predictedUpfront + (scenarioStrategic.predictedCvrBn ?? 0) : null);
 
   const ceilingLow = Math.floor(succeedStrategic);
   const ceilingHigh = Math.ceil(dealTotal ?? succeedStrategic * 1.3);
@@ -205,6 +207,40 @@ function ComparisonTable({ result }) {
         <span className="text-xs font-medium text-[#534AB7] text-right min-w-[55px] tabular-nums">{fmt(riskStrategic)}</span>
         <span className="text-xs font-medium text-[#BA7517] text-right min-w-[55px] tabular-nums">{fmt(succeedStrategic)}</span>
       </div>
+
+      {/* Deal economics rows */}
+      {predictedUpfront != null && (
+        <>
+          <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center py-2 mt-1 border-t border-gray-300">
+            <span className="text-xs text-gray-900 font-medium">
+              Deal economics {dealStructure ? <span className="text-[10px] text-gray-400 ml-1">({dealStructure})</span> : null}
+            </span>
+            <span className="text-[10px] font-medium text-gray-400 tracking-wider text-right min-w-[55px]">UPFRONT</span>
+            <span className="text-[10px] font-medium text-gray-400 tracking-wider text-right min-w-[55px]">TOTAL</span>
+          </div>
+          <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center py-1.5 border-b border-gray-200">
+            <span className="text-xs text-gray-500">Predicted deal value</span>
+            <span className="text-xs font-medium text-gray-900 text-right min-w-[55px] tabular-nums">{fmt(predictedUpfront)}</span>
+            <span className="text-xs font-medium text-gray-900 text-right min-w-[55px] tabular-nums">{fmt(dealTotal)}</span>
+          </div>
+          {milestones && (
+            <div className="py-1.5 border-b border-gray-200">
+              <div className="grid grid-cols-[1fr_auto] gap-3 items-center">
+                <span className="text-[11px] text-gray-400 pl-2">Regulatory milestones</span>
+                <span className="text-[11px] text-gray-500 text-right tabular-nums">{fmt(milestones.regulatoryMilestonesBn)}</span>
+              </div>
+              <div className="grid grid-cols-[1fr_auto] gap-3 items-center mt-0.5">
+                <span className="text-[11px] text-gray-400 pl-2">Commercial milestones</span>
+                <span className="text-[11px] text-gray-500 text-right tabular-nums">{fmt(milestones.commercialMilestonesBn)}</span>
+              </div>
+              <div className="grid grid-cols-[1fr_auto] gap-3 items-center mt-0.5">
+                <span className="text-[11px] text-gray-400 pl-2">Royalty NPV</span>
+                <span className="text-[11px] text-gray-500 text-right tabular-nums">{fmt(milestones.royaltyNpvBn)}</span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Ceiling row */}
       <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center py-2 mt-1 border-t border-gray-300">

@@ -1,9 +1,14 @@
 # Local Setup
 
+```bash
+git clone https://github.com/codingnoodle/lifescience-bd-intelligence.git
+cd lifescience-bd-intelligence
+```
+
 ## Backend (FastAPI + LangGraph)
 
 ```bash
-cd bd-intelligence
+# From repo root:
 
 # Install dependencies
 uv sync
@@ -19,7 +24,8 @@ uv run python tests/run_deal_tests.py
 ## Frontend (React + Vite + Tailwind)
 
 ```bash
-cd bd-intelligence/frontend
+# From repo root:
+cd frontend
 
 # Install dependencies
 npm install
@@ -40,7 +46,7 @@ npm run lint
 ## Docker (both together)
 
 ```bash
-cd bd-intelligence
+# From repo root:
 
 # Build and run both services
 docker compose up --build

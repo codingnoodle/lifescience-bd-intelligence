@@ -32,7 +32,7 @@ if LLM_PROVIDER == "bedrock":
     # Smart for reasoning tasks (science, market, synthesis)
     # Using Sonnet 4 global inference profile (Sonnet 3.7 marked legacy on this account)
     sonnet = ChatBedrockConverse(
-        model="global.anthropic.claude-sonnet-4-20250514-v1:0",
+        model="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
         region_name=AWS_REGION,
         temperature=0.2,
         max_tokens=8192,
@@ -61,14 +61,14 @@ else:
 
     # Fast + cheap for structured tasks (research planning, PTRS lookups)
     haiku = ChatAnthropic(
-        model="claude-haiku-4-5-20251001",
+        model="claude-haiku-4-5-20241022",
         api_key=api_key,
         temperature=0.0  # Deterministic for structured tasks
     )
 
     # Smart for reasoning tasks (scientific analysis, market analysis, synthesis)
     sonnet = ChatAnthropic(
-        model="claude-sonnet-4-5-20251001",
+        model="claude-sonnet-4-5-20241022",
         api_key=api_key,
         temperature=0.2  # Slight creativity for reasoning
     )
