@@ -5,6 +5,7 @@ import re
 from langchain_core.messages import HumanMessage
 from backend.config import haiku
 from backend.tools.clinicaltrials import search_trials, format_trials_for_prompt
+from backend.tools.pubmed import search_pubmed, format_pubmed_for_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,9 @@ Sidebar filters the user has set (use as hints when not explicit in message):
 
 --- ClinicalTrials.gov data (authoritative — use this to determine indication, phase, and TA) ---
 {ct_data}
+
+--- PubMed literature (use for MOA, target, and TA when no clinical trials exist) ---
+{pubmed_data}
 
 First, decide the query type:
 - "discovery" — user is asking for a LIST of assets (e.g. "top Phase 2 oncology assets", "scan oncology", "what are the best ADCs", "show me assets launching 2028"). No specific drug name is mentioned.
@@ -72,7 +76,8 @@ Rules:
 - IMPORTANT: ClinicalTrials.gov data above is AUTHORITATIVE. If it shows conditions, phase, and status, use those for indication name, phase, and TA — do NOT guess from training knowledge when trial data is available.
 - IMPORTANT: If the user explicitly states a phase in their message (e.g. "Phase 1", "what if Phase 2"), use EXACTLY that phase — supports what-if scenario analysis.
 - If phase is not stated, use ClinicalTrials.gov phase first, then sidebar filter, then infer.
-- If TA is not stated, derive from ClinicalTrials.gov conditions first, then infer from training knowledge.
+- If TA is not stated, derive from ClinicalTrials.gov conditions first, then PubMed MOA/target, then infer from training knowledge.
+- For preclinical assets with no clinical trials: use PubMed abstracts to determine MOA, target, indication, and TA. Set phase to "preclinical".
 - launch_year is an integer or null if unknown.
 - TA mapping: cancer/tumor/leukemia/ADC/NSCLC → oncology | CNS/brain/psychiatric → neurology | rare/orphan → rare_disease | MASH/NASH/heart/metabolic/GLP-1/obesity → cardio_metabolic | autoimmune/inflammatory/IBD → immunology"""
 
@@ -101,14 +106,21 @@ def run_research_planner(message: str, filters: dict) -> dict:
     Searches ClinicalTrials.gov first to ground the planner with real trial data.
     Returns parsed dict with keys: asset_name, indications, clarification_needed.
     """
-    # Pre-fetch ClinicalTrials.gov data to ground the planner
+    # Pre-fetch structured data to ground the planner
     candidate_name = _extract_asset_name(message)
+    ct_data = "No asset name detected for trial lookup."
+    pubmed_data = "No PubMed data."
+
     if candidate_name:
         trials = search_trials(candidate_name)
         ct_data = format_trials_for_prompt(trials)
         logger.info(f"Research planner: found {len(trials)} trials for '{candidate_name}'")
-    else:
-        ct_data = "No asset name detected for trial lookup."
+
+        # If no clinical trials found, search PubMed for preclinical/MOA data
+        if not trials:
+            articles = search_pubmed(f"{candidate_name} mechanism action target preclinical")
+            pubmed_data = format_pubmed_for_prompt(articles)
+            logger.info(f"Research planner: no trials, found {len(articles)} PubMed articles for '{candidate_name}'")
 
     phases = ", ".join(filters.get("phases", [])) or "not specified"
     launch_years = ", ".join(str(y) for y in filters.get("launchYears", [])) or "not specified"
@@ -120,6 +132,7 @@ def run_research_planner(message: str, filters: dict) -> dict:
         launch_years=launch_years,
         therapeutic_areas=therapeutic_areas,
         ct_data=ct_data,
+        pubmed_data=pubmed_data,
     )
 
     response = haiku.invoke([HumanMessage(content=prompt)])
