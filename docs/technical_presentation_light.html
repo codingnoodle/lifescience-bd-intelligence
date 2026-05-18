@@ -299,7 +299,7 @@
 <div class="slide">
   <p class="section-label">Validation</p>
   <h2>Tested against real 2025-2026 deals</h2>
-  <p class="subtitle">Three assets, three deal structures, all within range</p>
+  <p class="subtitle">Four assets, multiple deal structures — all computed from formula, not anchored to known prices</p>
   <table class="mt-1">
     <thead>
       <tr>
@@ -317,9 +317,9 @@
         <td><strong>TERN-701</strong><br><span class="small">allosteric BCR-ABL TKI, CML</span></td>
         <td><span class="pill pill-amber">M&A</span></td>
         <td>Phase 1/2</td>
-        <td>$5.2B</td>
+        <td>$6.3B</td>
         <td>$5.7B (Merck)</td>
-        <td>$6.5B</td>
+        <td>$7.7B</td>
         <td>$5.7B</td>
       </tr>
       <tr>
@@ -340,11 +340,25 @@
         <td>$6.5B</td>
         <td>$18.5B*</td>
       </tr>
+      <tr>
+        <td><strong>ORX750</strong><br><span class="small">OX2R agonist, narcolepsy/IH</span></td>
+        <td><span class="pill pill-amber">M&A</span></td>
+        <td>Phase 2a</td>
+        <td>$6.8B</td>
+        <td>$6.3B (Eli Lilly)</td>
+        <td>$7.9B</td>
+        <td>$6.3B</td>
+      </tr>
     </tbody>
   </table>
   <p class="small mt-1">*AstraZeneca deal was for 8 programs, not just SYH2082. Per-program total of $6.5B is reasonable.</p>
-  <div class="card mt-1" style="background:#fefce8; border-color:#fde047;">
-    <p style="font-size:0.82rem;"><strong>Key insight:</strong> Structured API grounding (ClinicalTrials.gov, PubMed, OpenFDA) eliminated the most common failure mode — TA misclassification — and dramatically improved peak sales accuracy by giving the LLM real comparator data.</p>
+  <div class="two-col mt-1">
+    <div class="card" style="background:#fefce8; border-color:#fde047;">
+      <p style="font-size:0.82rem;"><strong>Key insight:</strong> Structured API grounding (ClinicalTrials.gov, PubMed, OpenFDA) eliminated TA misclassification and gave the LLM real comparator data for accurate peak sales sizing.</p>
+    </div>
+    <div class="card" style="background:#fef2f2; border-color:#fca5a5;">
+      <p style="font-size:0.82rem;"><strong>No deal anchoring:</strong> All values are computed from the deal multiple formula (peak sales × multiple + adjustments). The system never substitutes known deal prices as outputs — real deals are mentioned in derivation text for context only.</p>
+    </div>
   </div>
 </div>
 
