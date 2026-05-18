@@ -36,12 +36,16 @@ research_planner -> science_agent -> market_agent -> synthesizer -> END
 
 ## 1. Research Planner
 
-**Model:** Claude Haiku (fast, cheap -- structured parsing only)
+**Model:** Claude Haiku 4.5 (fast, cheap -- structured parsing only)
+**Tools:** ClinicalTrials.gov API, PubMed API (fallback)
 
 **What it does:**
+- Searches ClinicalTrials.gov BEFORE calling the LLM to ground the planner with real trial data
+- If no trials found (preclinical), searches PubMed for MOA/target papers as fallback
 - Classifies query as `"specific_asset"` or `"discovery"`
-- For specific assets: extracts `asset_name`, `indications[]` (name, phase, therapeutic_area, launch_year)
+- For specific assets: extracts `asset_name`, `indications[]` (name, phase, therapeutic_area, launch_year), `deal_mode`
 - For discovery: extracts `scan_criteria` (phase, TA, launch_year, keywords)
+- Detects `deal_mode` from user language ("licensing"/"partnership" → licensing, "M&A"/"acquisition" → ma, otherwise → auto)
 - Normalizes phase and TA strings to canonical keys via `normalize_phase()` and `normalize_ta()` from `ptrs_lookup.py`
 
 **Inputs:**
@@ -51,11 +55,14 @@ research_planner -> science_agent -> market_agent -> synthesizer -> END
 **Outputs written to state:**
 - `drug_asset_name` -- string
 - `indications` -- list of `IndicationAnalysis` dicts with `name`, `phase`, `therapeutic_area`, `launch_year`
+- `deal_mode` -- "ma" | "licensing" | "auto"
 - `clarification_needed` -- always null (agent infers rather than asking)
 - `research_plan` -- short description string
 
 **Key design decisions:**
-- `clarification_needed` is always `null`. The agent infers rather than asking. This is intentional: VC associates want instant results, not a back-and-forth. The tradeoff is occasional wrong inference (e.g. wrong TA for an obscure asset).
+- ClinicalTrials.gov data is marked AUTHORITATIVE in the prompt. When trial data shows conditions, phase, and status, the LLM uses those over training knowledge. This prevents TA misclassification (e.g., SYH2082 correctly identified as obesity/cardio_metabolic instead of oncology).
+- PubMed fallback only runs when no trials are found, keeping latency low for clinical-stage assets.
+- `clarification_needed` is always `null`. The agent infers rather than asking.
 - If the user explicitly states a phase (e.g. "what if Phase 1"), that phase is used verbatim -- supports what-if scenario analysis.
 - Sidebar filters override inferences only when the message is ambiguous.
 
@@ -63,17 +70,28 @@ research_planner -> science_agent -> market_agent -> synthesizer -> END
 
 ## 2. Science Agent
 
-**Model:** Claude Sonnet
-**Search:** Tavily (2 calls)
+**Model:** Claude Sonnet 4.5
+**Tools:** ClinicalTrials.gov API, PubMed API, OpenFDA API, Tavily Search, TA Validation (code), PTRS Lookup (code), FDA Signal Merge (code)
 
-### Searches
+### Data Sources (called in order)
 
-| # | Query template | Domains |
+| # | Source | What it provides |
 |---|---|---|
-| 1 | `"{asset} clinical trial ClinicalTrials.gov results patients dosed"` | clinicaltrials.gov, pubmed, fda.gov, asco.org, esmo.org, ash.confex.com, biorxiv.org |
-| 2 | `"{asset} mechanism of action efficacy safety trial results ASH ASCO ESMO conference"` | pubmed, fda.gov, nejm.org, thelancet.com, nature.com, asco.org, esmo.org, ash.confex.com, biorxiv.org |
+| 1 | **ClinicalTrials.gov API** | Trial status, phase, conditions, endpoints, enrollment (structured JSON) |
+| 2 | **TA Validation** (code) | Infers TA from trial conditions; corrects planner if wrong |
+| 3 | **PubMed E-utilities API** | Published literature with full abstracts (structured XML) |
+| 4 | **OpenFDA API** | Orphan drug, fast track, breakthrough designations (ground truth) |
+| 5 | **Tavily Search** | Conference posters, news, data not in structured APIs |
 
-Each Tavily call uses `search_depth="advanced"` and `max_results=8`.
+ClinicalTrials.gov, PubMed, and OpenFDA are free APIs requiring no key. Tavily requires an API key. Each Tavily call uses `search_depth="advanced"` and `max_results=8`.
+
+### TA Validation
+
+After fetching ClinicalTrials.gov data, the science agent infers the therapeutic area from trial conditions using a keyword-to-TA mapping (e.g., "obesity" → cardio_metabolic, "leukemia" → oncology). If the inferred TA contradicts the research planner's classification, the TA is corrected before the LLM runs. This is a safety net — the planner should get it right with trial data, but this catches edge cases.
+
+### FDA Signal Merge
+
+After the LLM outputs de-risking signals, the Python code merges OpenFDA designation data as ground truth. If OpenFDA confirms `orphan_drug`, `fast_track`, or `breakthrough_designation`, those signals are added even if the LLM missed them.
 
 ### LLM Output (per indication)
 
@@ -332,14 +350,35 @@ risk_adjusted_bn = if_success_bn x weighted_average_ptrs_adjusted
 | Platform / multi-indication | +0.3x |
 | me_too or worse_in_class | -0.5x |
 
-### Step 4 -- CVR Structure Detection
+### Step 4 -- Dual Deal Economics (M&A + Licensing)
 
-If the asset has significant early-stage platform components (preclinical or Phase 1 alongside the lead) OR material approval-path milestones not yet achieved, the strategic scenario splits:
+The synthesizer always computes BOTH deal structures side by side. Users toggle between them in the frontend.
 
-- `predicted_upfront_bn`: base value at signing
-- `predicted_cvr_bn`: contingent value rights tied to milestones (typically 20-40% of total deal value)
+#### 4A. M&A / Acquisition
 
-If no CVR is warranted, `predicted_cvr_bn = 0` and `predicted_upfront_bn` equals the strategic if_success value.
+Buyer acquires entire company/asset, takes all development risk.
+
+- `territory`: always "worldwide"
+- `predicted_upfront_bn` ≈ strategic `if_success_bn` (buyer absorbs risk)
+- `regulatory_milestones_bn`: small CVR/earnout ($0-1B), zero for marketed
+- `commercial_milestones_bn`: rare (typically 0)
+- `royalty_npv_bn`: 0 (buyer owns 100%)
+- `predicted_total_bn` = upfront + CVR ≈ upfront
+
+#### 4B. Licensing / Partnership
+
+Buyer licenses specific program(s), risk shared via milestones.
+
+- `territory`: "worldwide" | "ex-US" | "ex-China" | "ex-Japan"
+- Territory fractions: US=60%, EU=25%, China=15%, Japan=10%, rest=15%
+- `predicted_upfront_bn`: cash at signing, fraction of total by phase:
+  - Preclinical: 15-25% | Phase 1: 20-30% | Phase 1/2: 25-35%
+  - Phase 2: 30-40% | Phase 3: 35-50% | Marketed: 50-60%
+- `regulatory_milestones_bn`: $200-500M per indication per milestone, scaled by territory
+- `commercial_milestones_bn`: $300-800M total across sales tiers, scaled by territory
+- `royalty_npv_bn`: peak_displacement × territory_fraction × royalty_rate × rev_mult × npv_discount
+  - Rates: 15-20% early-stage, 20-25% Phase 2+, 25-30% Phase 3/marketed
+- `predicted_total_bn` = upfront + regulatory + commercial + royalty (2-3x upfront for early-stage)
 
 ### Step 5 -- Composite Score and Recommendation
 
@@ -377,8 +416,20 @@ Science is weighted higher because science risk is the primary reason BD deals f
   },
   "scenario_standalone":   {"if_success_bn": ..., "risk_adjusted_bn": ..., "derivation_string": "..."},
   "scenario_displacement": {"if_success_bn": ..., "risk_adjusted_bn": ..., "derivation_string": "..."},
-  "scenario_strategic":    {"if_success_bn": ..., "risk_adjusted_bn": ..., "deal_multiple": ...,
-                            "predicted_upfront_bn": ..., "predicted_cvr_bn": ..., "derivation_string": "..."}
+  "scenario_strategic_ma": {
+    "if_success_bn": ..., "risk_adjusted_bn": ..., "deal_multiple": ...,
+    "territory": "worldwide",
+    "predicted_upfront_bn": ...,
+    "milestones": {"regulatory_milestones_bn": ..., "commercial_milestones_bn": ..., "royalty_npv_bn": 0},
+    "predicted_total_bn": ..., "derivation_string": "..."
+  },
+  "scenario_strategic_licensing": {
+    "if_success_bn": ..., "risk_adjusted_bn": ..., "deal_multiple": ...,
+    "territory": "worldwide",
+    "predicted_upfront_bn": ...,
+    "milestones": {"regulatory_milestones_bn": ..., "commercial_milestones_bn": ..., "royalty_npv_bn": ...},
+    "predicted_total_bn": ..., "derivation_string": "..."
+  }
 }
 ```
 
@@ -508,5 +559,9 @@ Adjust in the synthesizer prompt. The 60% science / 40% market split reflects th
 | Sequential graph means total latency is sum of all agents | ~30-60 seconds for a full run depending on Tavily and LLM response times | Cannot parallelize science and market agents because market reads ptrs_adjusted from science |
 | Discovery mode is parsed but no discovery_agent node exists in the graph | Research planner can classify a query as "discovery" but the graph only runs the specific-asset pipeline | Implement a discovery_agent node or route discovery queries differently |
 | Tavily domain restrictions may miss relevant sources | Each agent's search is limited to its predefined domain list | Expand or remove domain filters for broader coverage |
-| LLM hallucination of de-risking signals | LLM may output signals not in the fixed vocabulary | Mitigated: Python filters to `VALID_DERISKING_SIGNALS` before PTRS computation |
+| LLM hallucination of de-risking signals | LLM may output signals not in the fixed vocabulary | Mitigated: Python filters to `VALID_DERISKING_SIGNALS`; FDA designations merged as ground truth from OpenFDA |
 | NPV discount uses fixed 10% rate | Does not account for varying cost of capital across buyers or risk profiles | Make discount rate configurable |
+| Multi-asset platform deals not supported | System evaluates single assets; cannot bundle 8 programs like AZ/CSPC deal | Add platform deal mode with per-program allocation |
+| Licensing territory defaults to worldwide | No UI to specify ex-US/ex-China territory | Add territory selector to frontend |
+| Tools are direct HTTP calls, not MCP | Cannot be reused by other LLM clients | Convert to MCP server for reusability |
+| No recalculate fast-path for deal mode switch | Switching M&A/Licensing re-runs full pipeline | Add synthesizer-only recalculate when only deal mode changes |
