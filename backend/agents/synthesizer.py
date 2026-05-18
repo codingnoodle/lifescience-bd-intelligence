@@ -388,13 +388,6 @@ def run_synthesizer(asset_name: str, indications: list[dict], deal_mode: str = "
             raw = raw[4:]
     raw = raw.strip()
 
-    _empty_strategic = {
-        "if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0,
-        "territory": "worldwide", "predicted_upfront_bn": 0,
-        "milestones": {"regulatory_milestones_bn": 0, "commercial_milestones_bn": 0, "royalty_npv_bn": 0},
-        "predicted_total_bn": 0, "derivation_string": "No data",
-    }
-
     try:
         parsed = json.loads(raw)
         return {
