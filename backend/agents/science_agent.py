@@ -18,6 +18,50 @@ logger = logging.getLogger(__name__)
 
 _SIGNAL_VOCAB = ", ".join(sorted(VALID_DERISKING_SIGNALS))
 
+# Map ClinicalTrials.gov condition keywords → our TA taxonomy
+_CONDITION_TO_TA = {
+    # cardio_metabolic
+    "obesity": "cardio_metabolic", "overweight": "cardio_metabolic", "type 2 diabetes": "cardio_metabolic",
+    "diabetes mellitus": "cardio_metabolic", "nash": "cardio_metabolic", "mash": "cardio_metabolic",
+    "metabolic syndrome": "cardio_metabolic", "cardiovascular": "cardio_metabolic",
+    "heart failure": "cardio_metabolic", "dyslipidemia": "cardio_metabolic", "hypertension": "cardio_metabolic",
+    "atherosclerosis": "cardio_metabolic", "glp-1": "cardio_metabolic",
+    # oncology
+    "cancer": "oncology", "tumor": "oncology", "carcinoma": "oncology", "leukemia": "oncology",
+    "lymphoma": "oncology", "melanoma": "oncology", "sarcoma": "oncology", "myeloma": "oncology",
+    "nsclc": "oncology", "lung cancer": "oncology", "breast cancer": "oncology",
+    "glioblastoma": "oncology", "solid tumor": "oncology",
+    # immunology
+    "rheumatoid arthritis": "immunology", "lupus": "immunology", "crohn": "immunology",
+    "colitis": "immunology", "psoriasis": "immunology", "atopic dermatitis": "immunology",
+    "autoimmune": "immunology", "inflammatory": "immunology",
+    # neurology
+    "alzheimer": "neurology", "parkinson": "neurology", "epilepsy": "neurology",
+    "depression": "neurology", "schizophrenia": "neurology", "migraine": "neurology",
+    "sleep": "neurology", "narcolepsy": "neurology", "als": "neurology",
+    # rare_disease
+    "orphan": "rare_disease", "rare disease": "rare_disease", "fabry": "rare_disease",
+    "gaucher": "rare_disease", "pompe": "rare_disease", "sma": "rare_disease",
+    # infectious_disease
+    "hiv": "infectious_disease", "hepatitis": "infectious_disease", "covid": "infectious_disease",
+    "infection": "infectious_disease", "fungal": "infectious_disease", "rsv": "infectious_disease",
+}
+
+
+def _infer_ta_from_trials(trials: list[dict]) -> str | None:
+    """Infer therapeutic area from ClinicalTrials.gov conditions. Returns None if unclear."""
+    ta_votes: dict[str, int] = {}
+    for trial in trials:
+        conditions_text = " ".join(trial.get("conditions", [])).lower()
+        title_text = (trial.get("title", "") + " " + trial.get("summary", "")).lower()
+        combined = conditions_text + " " + title_text
+        for keyword, ta in _CONDITION_TO_TA.items():
+            if keyword in combined:
+                ta_votes[ta] = ta_votes.get(ta, 0) + 1
+    if not ta_votes:
+        return None
+    return max(ta_votes, key=ta_votes.get)
+
 SCIENCE_PROMPT = """You are a senior biotech scientist conducting pharma BD due diligence.
 Your job: extract a structured scientific profile and score each indication.
 Do NOT analyze market competition or buyers — that is handled by separate agents.
@@ -146,6 +190,18 @@ def run_science_agent(asset_name: str, indications: list[dict]) -> list[dict]:
     trials = search_trials(asset_name)
     ct_data = format_trials_for_prompt(trials)
     logger.info(f"Science agent: found {len(trials)} trials on ClinicalTrials.gov")
+
+    # TA validation: if ClinicalTrials.gov data contradicts planner's TA, correct it
+    inferred_ta = _infer_ta_from_trials(trials)
+    if inferred_ta:
+        for ind in indications:
+            planner_ta = ind.get("therapeutic_area", "")
+            if planner_ta != inferred_ta:
+                logger.warning(
+                    f"Science agent: TA correction for '{ind['name']}': "
+                    f"planner said '{planner_ta}', ClinicalTrials.gov says '{inferred_ta}'"
+                )
+                ind["therapeutic_area"] = inferred_ta
 
     pubmed_articles = search_pubmed(f"{asset_name} clinical trial efficacy safety")
     pubmed_data = format_pubmed_for_prompt(pubmed_articles)
