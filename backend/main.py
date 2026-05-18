@@ -81,7 +81,6 @@ class ScenarioOut(BaseModel):
     riskAdjustedBn: Optional[float] = None
     dealMultiple: Optional[float] = None
     predictedUpfrontBn: Optional[float] = None
-    predictedCvrBn: Optional[float] = None
     derivationString: Optional[str] = None
 
 

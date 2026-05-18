@@ -274,8 +274,7 @@ export default function ValuationWaterfall({ result }) {
     ? result.scenarioStrategicLicensing
     : result.scenarioStrategicMa;
 
-  // Fallback for old data format
-  const strat = scenarioStrategic || result.scenarioStrategic || {};
+  const strat = scenarioStrategic || {};
   const strategicSucceed = strat?.ifSuccessBn ?? 0;
   const maxVal = Math.max(strategicSucceed, 9);
 

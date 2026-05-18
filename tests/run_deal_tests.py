@@ -59,10 +59,11 @@ class DealTestRunner:
         # Extract three-scenario values
         standalone = result.get("scenarioStandalone") or {}
         displacement = result.get("scenarioDisplacement") or {}
-        strategic = result.get("scenarioStrategic") or {}
+        strategic_ma = result.get("scenarioStrategicMa") or {}
+        strategic_lic = result.get("scenarioStrategicLicensing") or {}
 
-        strategic_success = strategic.get("ifSuccessBn")
-        strategic_risk = strategic.get("riskAdjustedBn")
+        strategic_success = strategic_ma.get("ifSuccessBn")
+        strategic_risk = strategic_ma.get("riskAdjustedBn")
         displacement_success = displacement.get("ifSuccessBn")
         standalone_success = standalone.get("ifSuccessBn")
 
