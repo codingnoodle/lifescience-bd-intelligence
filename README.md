@@ -1,105 +1,89 @@
 # BD Decision Intelligence
 
-A multi-agent pharma BD valuation system that evaluates drug assets and produces dual-view deal pricing with buyer mapping.
+A multi-agent pharma BD valuation system that evaluates drug assets and produces dual-view deal pricing with dual deal modes (M&A + Licensing) and buyer mapping.
 
 ## What it does
 
 Type any drug asset and get:
-- **Science profile** — positioning, de-risking signals, adjusted PTRS
+- **Science profile** — positioning, de-risking signals, adjusted PTRS (grounded by ClinicalTrials.gov, PubMed, OpenFDA)
 - **Comparator analysis** — SOC discovery, metric comparison, differentiation verdict
 - **Three-scenario valuation** — standalone NPV, platform displacement, strategic deal price
+- **Dual deal economics** — M&A (upfront ≈ total) and Licensing (upfront + milestones + royalty NPV = total) side by side
 - **Buyer mapping** — likely acquirers ranked by urgency (patent cliff + flush capital + deal velocity)
-- **Dual-view output** — risk-adjusted (PTRS applied) and if-succeed (assumes approval) side by side
+- **Dual-view output** — risk-adjusted (PTRS applied) and if-succeed (assumes approval)
 
 ## Architecture
 
 ![State Graph](docs/stategraph.png)
 
-Sequential pipeline — market agent reads PTRS from science agent, synthesizer reads everything.
+Sequential pipeline — four agents, each with dedicated tools. Market agent reads PTRS from science agent, synthesizer reads everything.
 
-Three agents do the analytical work:
-- **Science agent** — searches PubMed/ClinicalTrials.gov, builds positioning profile, identifies de-risking signals, computes adjusted PTRS
-- **Market agent** — discovers comparators, runs metric comparison, determines differentiation verdict (best/better/me-too/worse/new-class-creation), sizes dual peak sales
-- **Synthesizer** — maps buyers (patent cliff + flush capital tables), scores bidding tension, computes deal multiple, produces three scenarios with derivation math
+- **Research planner** (Haiku 4.5) — searches ClinicalTrials.gov to ground the query, then parses asset/indications/phase/TA/deal_mode. PubMed fallback for preclinical assets.
+- **Science agent** (Sonnet 4.5) — ClinicalTrials.gov + PubMed + OpenFDA + Tavily → positioning profile, de-risking signals, PTRS. TA validation corrects planner if ClinicalTrials.gov disagrees. FDA designations merged as ground truth.
+- **Market agent** (Sonnet 4.5) — Tavily ×3 → comparator discovery, differentiation verdict, peak sales (standalone + displacement)
+- **Synthesizer** (Sonnet 4.5) — Tavily ×4 + buyer urgency tables → buyer mapping, bidding tension, three scenarios, dual M&A + Licensing economics
 
-The research planner is a lightweight classifier that routes queries (specific asset vs. discovery scan).
-
-**Tech stack**: FastAPI + LangGraph + Claude Sonnet (backend), React + Vite + Tailwind (frontend)
+**Tech stack**: FastAPI + LangGraph + Claude Sonnet 4.5 / Haiku 4.5 (AWS Bedrock), React + Vite + Tailwind
 
 ## Project structure
 
 ```
 bd-intelligence/
 ├── backend/
-│   ├── agents/           # science_agent, market_agent, synthesizer, research_planner, discovery_agent
+│   ├── agents/           # research_planner, science_agent, market_agent, synthesizer, discovery_agent
 │   ├── utils/            # ptrs_lookup, buyer_context, deal_benchmarks
-│   ├── tools/            # Tavily search wrappers
+│   ├── tools/            # clinicaltrials.py, pubmed.py, openfda.py (direct API clients)
 │   ├── graph.py          # LangGraph sequential pipeline
 │   ├── main.py           # FastAPI: /analyze, /analyze/stream, /recalculate
 │   └── state.py          # IndicationAnalysis TypedDict + BDState
 ├── frontend/
 │   └── src/components/   # ChatWindow, ResultCard, ValuationWaterfall, AssumptionsPanel, FilterSidebar
 ├── docs/
+│   ├── architecture.md   # Full architecture with Mermaid diagrams
 │   ├── agent_logic.md    # Detailed scoring rubric, formulas, tuning guide
-│   └── stategraph.png    # Auto-generated graph visualization
+│   ├── stategraph.png    # Pipeline visualization with tools per agent
+│   └── technical_presentation_light.html  # 8-slide technical deck
 └── tests/                # Real deal validation suite
 ```
 
 ## Setup
 
 ```bash
-# Backend
-cd bd-intelligence
-cp .env.example .env     # add ANTHROPIC_API_KEY and TAVILY_API_KEY
+git clone https://github.com/codingnoodle/bd-intelligence-v2.git
+cd bd-intelligence-v2
+cp .env.example .env     # set LLM_PROVIDER, API keys, TAVILY_API_KEY
 uv sync
-uv run uvicorn backend.main:app --reload
+
+# Backend
+uv run uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 # Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev
+cd frontend && npm install && npm run dev
 ```
 
-Backend runs on `http://localhost:8000`, frontend on `http://localhost:5173`.
+Backend: `http://localhost:8000` | Frontend: `http://localhost:5173`
 
-## API
+## Validation
 
-### `POST /analyze/stream` (primary)
-SSE endpoint — streams progress events then final result.
+Tested against real 2025-2026 deals:
 
-```json
-{"message": "TERN-701 allosteric BCR::ABL1 TKI CML Phase 1/2", "filters": {}}
-```
+| Asset | Mode | Predicted Upfront | Actual | Predicted Total | Actual Total |
+|---|---|---|---|---|---|
+| TERN-701 (CML, Ph1/2) | M&A | $5.2B | $5.7B (Merck) | $6.5B | $5.7B |
+| BNT327 (NSCLC, Ph3) | Licensing | $3.8B | $3.5B (BMS) | $12.7B | $11.1B |
+| SYH2082 (Obesity, Ph1) | Licensing | $1.2B | $1.2B (AstraZeneca) | $6.5B | $18.5B* |
 
-### `POST /recalculate`
-Re-runs from market agent onward with user overrides (e.g. edited PTRS, changed comparator).
-
-```json
-{
-  "asset_name": "TERN-701",
-  "indications": [...],
-  "overrides": {"indication_name": "CML", "field": "ptrs_adjusted", "value": 0.35}
-}
-```
-
-## Valuation methodology
-
-Each scenario shows **two values**:
-
-| Scenario | Risk-adjusted | If-succeed |
-|---|---|---|
-| Standalone NPV | peak x PTRS x rev_mult x NPV | peak x rev_mult x NPV |
-| Platform displacement | + SOC capture, PTRS applied | + SOC capture, no PTRS |
-| Strategic deal price | deal_multiple x PTRS | deal_multiple (what buyer pays) |
-
-Deal multiple = base(phase) + urgency_adj + bidding_adj + differentiation_adj. See `docs/agent_logic.md` for the full formula.
+*AZ deal was for 8 programs, not just SYH2082.
 
 ## Key files
 
 | File | What it does |
 |---|---|
+| `tools/clinicaltrials.py` | ClinicalTrials.gov API client (trials, conditions, endpoints) |
+| `tools/pubmed.py` | PubMed E-utilities API client (search + fetch abstracts) |
+| `tools/openfda.py` | OpenFDA API client (orphan, fast track, breakthrough designations) |
 | `utils/ptrs_lookup.py` | Base PTRS table + `get_adjusted_ptrs()` with 9 de-risking signals |
 | `utils/buyer_context.py` | Patent cliff (12 buyers) + flush capital (3 buyers) tables |
 | `utils/deal_benchmarks.json` | 20 M&A + 7 licensing deals from 2025-2026 |
-| `agents/synthesizer.py` | Buyer mapping, bidding tension, three-scenario output |
+| `agents/synthesizer.py` | Buyer mapping, bidding tension, dual M&A/Licensing output |
 | `docs/agent_logic.md` | Complete scoring rubric, formulas, tuning guide |

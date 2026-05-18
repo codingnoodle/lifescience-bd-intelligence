@@ -1,8 +1,8 @@
 # Local Setup
 
 ```bash
-git clone https://github.com/codingnoodle/lifescience-bd-intelligence.git
-cd lifescience-bd-intelligence
+git clone https://github.com/codingnoodle/bd-intelligence-v2.git
+cd bd-intelligence-v2
 ```
 
 ## Backend (FastAPI + LangGraph)
