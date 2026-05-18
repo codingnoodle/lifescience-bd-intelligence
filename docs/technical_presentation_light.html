@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BD Intelligence — Technical Architecture</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg-slide: #f8f9fb; --bg-card: #f0f2f5;
+    --fg: #374151; --fg-dim: #6b7280; --fg-bright: #111827;
+    --accent: #4d7c5e; --accent-dim: #3d6b4e; --accent-glow: #4d7c5e15;
+    --warm: #d97706; --coral: #dc2626; --blue: #2563eb; --purple: #7c3aed;
+    --border: #e5e7eb;
+  }
+  html, body { height: 100%; background: var(--bg); color: var(--fg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow: hidden; }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; padding: 44px 72px 48px; background: var(--bg-slide); overflow-y: auto; }
+  .slide.active { display: flex; }
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--blue)); transition: width 0.35s ease; z-index: 100; }
+  #slide-counter { position: fixed; bottom: 20px; right: 32px; font-size: 0.85rem; color: #9ca3af; font-variant-numeric: tabular-nums; z-index: 100; }
+  h1 { font-size: 2.2rem; color: var(--fg-bright); margin-bottom: 0.2em; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+  h2 { font-size: 1.6rem; color: var(--fg-bright); margin-bottom: 0.15em; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.35em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  p, li { font-size: 0.92rem; line-height: 1.6; color: var(--fg); }
+  .subtitle { font-size: 1.05rem; color: var(--fg-dim); margin-bottom: 0.4em; font-weight: 400; }
+  .section-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.5em; }
+  .small { font-size: 0.8rem; color: var(--fg-dim); }
+  ul { margin-left: 1.2em; margin-bottom: 0.4em; list-style: none; }
+  li { margin-bottom: 0.35em; padding-left: 0.2em; }
+  li::before { content: ""; display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+  strong { color: var(--fg-bright); font-weight: 600; }
+  em { font-style: normal; color: var(--accent); font-weight: 500; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .mt-1 { margin-top: 12px; }
+  .mt-2 { margin-top: 20px; }
+  .card { background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 14px 16px 12px; }
+  .card-accent { background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 14px 16px 12px; border-left: 3px solid var(--accent); }
+  .card h3 { margin-bottom: 0.3em; }
+  .flow { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 20px; }
+  .flow-box { background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 120px; }
+  .flow-box.highlight { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+  .flow-arrow { font-size: 1.5rem; color: var(--accent); padding: 0 12px; flex-shrink: 0; }
+  .badge-model { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; }
+  .badge-haiku { background: #dbeafe; color: var(--blue); }
+  .badge-sonnet { background: #ede9fe; color: var(--purple); }
+  .badge-api { background: #dcfce7; color: #166534; }
+  .badge-tavily { background: #fef3c7; color: #92400e; }
+  .badge-code { background: #f3f4f6; color: #374151; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 12px; }
+  th { background: var(--bg-card); padding: 8px 12px; text-align: left; font-weight: 600; color: var(--fg-bright); border-bottom: 2px solid var(--border); }
+  td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--fg); }
+  .mono { font-family: 'Courier New', monospace; font-size: 0.85rem; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; }
+  .pill-green { background: #dcfce7; color: #166534; }
+  .pill-amber { background: #fef3c7; color: #92400e; }
+  .pill-red { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div id="slide-counter"></div>
+
+<div class="deck">
+
+<!-- ==================== SLIDE 1: Title ==================== -->
+<div class="slide active">
+  <p class="section-label">Technical Architecture</p>
+  <h1>BD Decision Intelligence</h1>
+  <p class="subtitle">Multi-agent pharma valuation system</p>
+  <div class="mt-2">
+    <p>Four LLM agents in a sequential pipeline, grounded by structured APIs, producing dual-view valuations with M&A and licensing deal economics.</p>
+  </div>
+  <div class="flow mt-2">
+    <div class="flow-box"><strong>Research Planner</strong><br><span class="badge-model badge-haiku">Haiku 4.5</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-box"><strong>Science Agent</strong><br><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-box"><strong>Market Agent</strong><br><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-box"><strong>Synthesizer</strong><br><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+  </div>
+  <p class="small mt-2">FastAPI + LangGraph + Claude (Bedrock) | React + Vite + Tailwind</p>
+</div>
+
+<!-- ==================== SLIDE 2: Pipeline + Tools ==================== -->
+<div class="slide">
+  <p class="section-label">Agent Pipeline</p>
+  <h2>Each agent has dedicated tools</h2>
+  <p class="subtitle">Sequential — market agent reads PTRS from science agent</p>
+  <div class="four-col mt-1">
+    <div class="card">
+      <h3>Research Planner</h3>
+      <div style="margin-bottom:6px;"><span class="badge-model badge-haiku">Haiku 4.5</span></div>
+      <p style="font-size:0.82rem;"><strong>Parses</strong> user query into asset, indications, phase, TA, deal mode</p>
+      <div class="mt-1" style="font-size:0.78rem;">
+        <div><span class="badge-model badge-api">ClinicalTrials.gov</span> trial conditions, phase</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-api">PubMed</span> fallback for preclinical MOA</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Science Agent</h3>
+      <div style="margin-bottom:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+      <p style="font-size:0.82rem;"><strong>Profiles</strong> positioning, de-risking signals, PTRS, science score</p>
+      <div class="mt-1" style="font-size:0.78rem;">
+        <div><span class="badge-model badge-api">ClinicalTrials.gov</span> endpoints, enrollment</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-api">PubMed</span> full abstracts</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-api">OpenFDA</span> designations (ground truth)</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-tavily">Tavily</span> conference data</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-code">Code</span> TA validation, PTRS calc</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Market Agent</h3>
+      <div style="margin-bottom:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+      <p style="font-size:0.82rem;"><strong>Discovers</strong> comparators, differentiation, peak sales</p>
+      <div class="mt-1" style="font-size:0.78rem;">
+        <div><span class="badge-model badge-tavily">Tavily</span> SOC / comparators</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-tavily">Tavily</span> market sizing</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-tavily">Tavily</span> pipeline competitors</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Synthesizer</h3>
+      <div style="margin-bottom:6px;"><span class="badge-model badge-sonnet">Sonnet 4.5</span></div>
+      <p style="font-size:0.82rem;"><strong>Maps</strong> buyers, bidding tension, dual deal economics</p>
+      <div class="mt-1" style="font-size:0.78rem;">
+        <div><span class="badge-model badge-tavily">Tavily</span> franchise fit, velocity ×4</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-code">Code</span> buyer urgency tables</div>
+        <div style="margin-top:4px;"><span class="badge-model badge-code">Code</span> NPV discount</div>
+      </div>
+    </div>
+  </div>
+  <p class="small mt-1">All tools are direct HTTP calls — deterministic, structured. LLM does not choose tools; they run in fixed order.</p>
+</div>
+
+<!-- ==================== SLIDE 3: Data Grounding ==================== -->
+<div class="slide">
+  <p class="section-label">Data Grounding</p>
+  <h2>Structured APIs before LLM reasoning</h2>
+  <p class="subtitle">Why: LLMs hallucinate drug data. Structured APIs don't.</p>
+  <div class="two-col mt-1">
+    <div>
+      <div class="card-accent">
+        <h3>ClinicalTrials.gov API</h3>
+        <ul>
+          <li>Trial status, phase, conditions, endpoints</li>
+          <li><strong>Grounds the research planner</strong> — prevents TA misclassification</li>
+          <li>Example: "SYH2082" → conditions: "Overweight or Obesity" → cardio_metabolic</li>
+          <li>Without it: Haiku guessed "NSCLC / oncology" for a GLP-1 drug</li>
+        </ul>
+      </div>
+      <div class="card-accent mt-1">
+        <h3>PubMed E-utilities API</h3>
+        <ul>
+          <li>Full abstracts with efficacy/safety data</li>
+          <li><strong>Fallback for preclinical</strong> — when no trials exist, MOA papers ground the planner</li>
+          <li>8 articles for BNT327, 0 for TERN-701 (early-stage, expected)</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card-accent">
+        <h3>OpenFDA API</h3>
+        <ul>
+          <li>Orphan drug, fast track, breakthrough designations</li>
+          <li><strong>Ground truth</strong> — merged into de-risking signals even if LLM missed them</li>
+          <li>Deterministic: either you have the designation or you don't</li>
+        </ul>
+      </div>
+      <div class="card-accent mt-1">
+        <h3>Tavily Web Search</h3>
+        <ul>
+          <li>Conference posters (ASH, ASCO, ESMO), analyst coverage, deal news</li>
+          <li>Fills gaps not in structured databases</li>
+          <li>Used by science agent (1 search), market agent (3), synthesizer (4)</li>
+          <li><strong>Non-deterministic</strong> — results vary across runs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: Valuation Model ==================== -->
+<div class="slide">
+  <p class="section-label">Valuation</p>
+  <h2>Three scenarios × two views</h2>
+  <p class="subtitle">Every number shown as both risk-adjusted (with PTRS) and if-succeed (assumes approval)</p>
+  <div class="three-col mt-1">
+    <div class="card">
+      <h3>A. Standalone NPV</h3>
+      <p style="font-size:0.82rem;">Asset's own patient population</p>
+      <p class="mono mt-1" style="font-size:0.78rem;">
+        if_success = peak_standalone<br>× rev_mult × npv_discount<br><br>
+        risk_adj = above × PTRS
+      </p>
+    </div>
+    <div class="card">
+      <h3>B. Platform / Displacement</h3>
+      <p style="font-size:0.82rem;">+ SOC capture if best/better-in-class</p>
+      <p class="mono mt-1" style="font-size:0.78rem;">
+        if_success = peak_displacement<br>× rev_mult × npv_discount<br>+ optionality premium<br><br>
+        risk_adj = above × PTRS
+      </p>
+    </div>
+    <div class="card">
+      <h3>C. Strategic Deal Price</h3>
+      <p style="font-size:0.82rem;">What the winning bidder actually pays</p>
+      <p class="mono mt-1" style="font-size:0.78rem;">
+        deal_mult = base(phase)<br>+ urgency + bidding<br>+ differentiation<br><br>
+        if_success = peak_disp × deal_mult
+      </p>
+    </div>
+  </div>
+  <div class="card mt-2" style="background:#f0fdf4; border-color:#86efac;">
+    <p style="font-size:0.85rem;"><strong>PTRS</strong> (Probability of Technical & Regulatory Success) is computed in Python, not by the LLM. Base rate from phase × TA lookup table, adjusted by up to 9 de-risking signals (orphan, breakthrough, patients dosed, etc). Capped per phase.</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: Dual Deal Mode ==================== -->
+<div class="slide">
+  <p class="section-label">Deal Economics</p>
+  <h2>Dual mode: M&A vs. Licensing</h2>
+  <p class="subtitle">Always compute both — buyer compares before choosing structure</p>
+  <div class="two-col mt-1">
+    <div class="card" style="border-left: 3px solid var(--blue);">
+      <h3 style="color:var(--blue);">M&A / Acquisition</h3>
+      <ul>
+        <li>Buyer acquires entire company/asset</li>
+        <li><strong>Upfront ≈ total</strong> (buyer takes all risk)</li>
+        <li>Territory: always worldwide</li>
+        <li>Royalties: none (owns 100%)</li>
+        <li>Milestones: small CVR/earnout only</li>
+      </ul>
+      <div class="mt-1" style="background:#eff6ff; padding:10px; border-radius:6px; font-size:0.82rem;">
+        <strong>TERN-701:</strong> predicted $5.2B upfront<br>
+        Actual Merck deal: $5.7B
+      </div>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--purple);">
+      <h3 style="color:var(--purple);">Licensing / Partnership</h3>
+      <ul>
+        <li>Buyer licenses specific program(s)</li>
+        <li><strong>Upfront = 25-50% of total</strong> (risk shared)</li>
+        <li>Territory: worldwide / ex-US / ex-China</li>
+        <li>Royalties: 15-30% of net sales (NPV)</li>
+        <li>Milestones: regulatory + commercial stack</li>
+      </ul>
+      <div class="mt-1" style="background:#f5f3ff; padding:10px; border-radius:6px; font-size:0.82rem;">
+        <strong>BNT327:</strong> predicted $3.8B up / $12.7B total<br>
+        Actual BMS deal: $3.5B up / $11.1B total
+      </div>
+    </div>
+  </div>
+  <p class="small mt-1">Frontend toggle lets users switch between modes instantly — same underlying valuation, different deal economics layer.</p>
+</div>
+
+<!-- ==================== SLIDE 6: TA Validation ==================== -->
+<div class="slide">
+  <p class="section-label">Reliability</p>
+  <h2>TA validation prevents misclassification</h2>
+  <p class="subtitle">ClinicalTrials.gov conditions override LLM guesses</p>
+  <div class="two-col mt-1">
+    <div>
+      <div class="card" style="border-left: 3px solid var(--coral);">
+        <h3 style="color:var(--coral);">Before: planner guesses blind</h3>
+        <p style="font-size:0.82rem;">User types: <strong>"SYH2082"</strong></p>
+        <ul style="font-size:0.82rem;">
+          <li>Haiku doesn't know SYH2082</li>
+          <li>Guesses: NSCLC / oncology</li>
+          <li>Compares against Keytruda</li>
+          <li>Peak sales: $0.05B</li>
+          <li>Licensing upfront: $30M</li>
+          <li class="pill-red" style="font-size:0.78rem; display:inline-block;">Actual deal: $1.2B upfront</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <h3>After: grounded by trial data</h3>
+        <p style="font-size:0.82rem;">User types: <strong>"SYH2082"</strong></p>
+        <ul style="font-size:0.82rem;">
+          <li>ClinicalTrials.gov: "Overweight or Obesity"</li>
+          <li>Haiku sees conditions → cardio_metabolic</li>
+          <li>Compares against Zepbound/tirzepatide</li>
+          <li>Peak sales: $2.8B</li>
+          <li>Licensing upfront: $1.2B</li>
+          <li class="pill-green" style="font-size:0.78rem; display:inline-block;">Matches actual deal exactly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="small mt-1">For preclinical assets with no trials, PubMed abstracts provide fallback MOA/target data.</p>
+</div>
+
+<!-- ==================== SLIDE 7: Validation Results ==================== -->
+<div class="slide">
+  <p class="section-label">Validation</p>
+  <h2>Tested against real 2025-2026 deals</h2>
+  <p class="subtitle">Three assets, three deal structures, all within range</p>
+  <table class="mt-1">
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Type</th>
+        <th>Phase</th>
+        <th>Predicted Upfront</th>
+        <th>Actual Upfront</th>
+        <th>Predicted Total</th>
+        <th>Actual Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TERN-701</strong><br><span class="small">allosteric BCR-ABL TKI, CML</span></td>
+        <td><span class="pill pill-amber">M&A</span></td>
+        <td>Phase 1/2</td>
+        <td>$5.2B</td>
+        <td>$5.7B (Merck)</td>
+        <td>$6.5B</td>
+        <td>$5.7B</td>
+      </tr>
+      <tr>
+        <td><strong>BNT327</strong><br><span class="small">PD-L1×VEGF bispecific, NSCLC</span></td>
+        <td><span class="pill pill-green">Licensing</span></td>
+        <td>Phase 3</td>
+        <td>$3.8B</td>
+        <td>$3.5B (BMS)</td>
+        <td>$12.7B</td>
+        <td>$11.1B</td>
+      </tr>
+      <tr>
+        <td><strong>SYH2082</strong><br><span class="small">GLP-1/GIPR dual agonist, obesity</span></td>
+        <td><span class="pill pill-green">Licensing</span></td>
+        <td>Phase 1</td>
+        <td>$1.2B</td>
+        <td>$1.2B (AstraZeneca)</td>
+        <td>$6.5B</td>
+        <td>$18.5B*</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="small mt-1">*AstraZeneca deal was for 8 programs, not just SYH2082. Per-program total of $6.5B is reasonable.</p>
+  <div class="card mt-1" style="background:#fefce8; border-color:#fde047;">
+    <p style="font-size:0.82rem;"><strong>Key insight:</strong> Structured API grounding (ClinicalTrials.gov, PubMed, OpenFDA) eliminated the most common failure mode — TA misclassification — and dramatically improved peak sales accuracy by giving the LLM real comparator data.</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: Tech Stack ==================== -->
+<div class="slide">
+  <p class="section-label">Stack</p>
+  <h2>Technology & tools</h2>
+  <div class="two-col mt-1">
+    <div>
+      <div class="card">
+        <h3>Backend</h3>
+        <ul>
+          <li><strong>FastAPI</strong> — REST + SSE streaming</li>
+          <li><strong>LangGraph</strong> — sequential state graph</li>
+          <li><strong>Claude Sonnet 4.5 + Haiku 4.5</strong> — via AWS Bedrock</li>
+          <li><strong>ClinicalTrials.gov API</strong> — trial data (free)</li>
+          <li><strong>PubMed E-utilities API</strong> — literature (free)</li>
+          <li><strong>OpenFDA API</strong> — designations (free)</li>
+          <li><strong>Tavily Search API</strong> — web search</li>
+        </ul>
+      </div>
+      <div class="card mt-1">
+        <h3>Frontend</h3>
+        <ul>
+          <li><strong>React + Vite</strong> — SPA</li>
+          <li><strong>Tailwind CSS</strong> — styling</li>
+          <li>SSE event streaming for real-time progress</li>
+          <li>Toggle: Risk-adj / If-succeed × M&A / Licensing</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Data Sources (per analysis)</h3>
+        <table style="font-size:0.78rem; margin-top:8px;">
+          <tr><th>Source</th><th>Calls</th><th>Type</th></tr>
+          <tr><td>ClinicalTrials.gov</td><td>2</td><td>Structured JSON</td></tr>
+          <tr><td>PubMed</td><td>1-2</td><td>Structured XML</td></tr>
+          <tr><td>OpenFDA</td><td>2</td><td>Structured JSON</td></tr>
+          <tr><td>Tavily Search</td><td>8</td><td>Web snippets</td></tr>
+          <tr><td>LLM calls</td><td>4</td><td>Haiku ×1, Sonnet ×3</td></tr>
+        </table>
+      </div>
+      <div class="card mt-1">
+        <h3>Not MCP (yet)</h3>
+        <p style="font-size:0.82rem;">All tools are direct Python HTTP calls, invoked deterministically in fixed order. The LLM does not choose which tools to use.</p>
+        <p style="font-size:0.82rem; margin-top:6px;">Converting to MCP would enable reuse across clients (Claude Desktop, other agents) and LLM-driven tool selection.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const bar = document.getElementById('progress-bar');
+  const counter = document.getElementById('slide-counter');
+  let cur = 0;
+  function show(i) {
+    slides[cur].classList.remove('active');
+    cur = (i + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+    counter.textContent = (cur + 1) + ' / ' + slides.length;
+  }
+  show(0);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(cur + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(cur - 1); }
+  });
+  document.addEventListener('click', e => {
+    if (e.clientX > window.innerWidth / 2) show(cur + 1); else show(cur - 1);
+  });
+</script>
+</body>
+</html>
