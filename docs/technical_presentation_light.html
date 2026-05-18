@@ -414,6 +414,130 @@
   </div>
 </div>
 
+<!-- ==================== SLIDE 9: Next Steps — Enterprise MCP ==================== -->
+<div class="slide">
+  <p class="section-label">Next Steps</p>
+  <h2>Enterprise integration via MCP servers</h2>
+  <p class="subtitle">Replace public web search with internal proprietary data for deterministic, higher-accuracy outputs</p>
+  <div class="two-col mt-1">
+    <div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <h3>Science MCP Server</h3>
+        <p style="font-size:0.82rem; margin-bottom:8px;">Internal data sources exposed as MCP tools for the science agent:</p>
+        <ul style="font-size:0.8rem;">
+          <li><strong>Internal clinical database</strong> — proprietary trial results, IND filings, CMC data not on ClinicalTrials.gov</li>
+          <li><strong>KOL / medical affairs notes</strong> — advisory board insights, conference debriefs, competitive intelligence</li>
+          <li><strong>Preclinical data warehouse</strong> — in vivo/in vitro results, PK/PD models, toxicology for early-stage assets</li>
+          <li><strong>Patent / IP database</strong> — freedom-to-operate analysis, patent cliff dates, exclusivity periods</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-left: 3px solid var(--purple);">
+        <h3>Commercial MCP Server</h3>
+        <p style="font-size:0.82rem; margin-bottom:8px;">Internal data sources for the market agent + synthesizer:</p>
+        <ul style="font-size:0.8rem;">
+          <li><strong>EvaluatePharma / GlobalData</strong> — consensus analyst peak sales forecasts (replaces Tavily for market sizing, eliminates variance)</li>
+          <li><strong>Internal deal database</strong> — proprietary deal terms, board decks, IC memos from past transactions</li>
+          <li><strong>Pricing & market access models</strong> — internal revenue forecasts, payer landscape, reimbursement data</li>
+          <li><strong>CRM / pipeline tracker</strong> — which assets BD team is already tracking, meeting notes, term sheets in progress</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card mt-1" style="background:#f0fdf4; border-color:#86efac;">
+    <p style="font-size:0.82rem;"><strong>Why MCP?</strong> Model Context Protocol standardizes tool interfaces — same tools work with Claude Desktop, Claude Code, Slack bots, or any MCP-compatible client. Build once, use everywhere across the organization.</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: Next Steps — Capabilities ==================== -->
+<div class="slide">
+  <p class="section-label">Next Steps</p>
+  <h2>New capabilities with internal data</h2>
+  <div class="three-col mt-1">
+    <div class="card-accent">
+      <h3>Preclinical Asset Valuation</h3>
+      <p style="font-size:0.82rem;">Currently limited by sparse public data. With internal preclinical database:</p>
+      <ul style="font-size:0.8rem;">
+        <li>MOA validation from proprietary assay data</li>
+        <li>Target validation confidence from internal target portfolio</li>
+        <li>PK/PD-anchored peak sales sizing</li>
+        <li>Development cost models for NPV calculation</li>
+        <li>Internal PTRS calibration from historical program outcomes</li>
+      </ul>
+    </div>
+    <div class="card-accent">
+      <h3>Deterministic Peak Sales</h3>
+      <p style="font-size:0.82rem;">Biggest variance source today: Tavily → LLM interpretation. With internal data:</p>
+      <ul style="font-size:0.8rem;">
+        <li>EvaluatePharma consensus forecasts → structured, repeatable</li>
+        <li>Internal revenue models per indication</li>
+        <li>Historical accuracy tracking (predicted vs. actual)</li>
+        <li>Monte Carlo simulation for range outputs</li>
+        <li>Eliminate run-to-run variance entirely</li>
+      </ul>
+    </div>
+    <div class="card-accent">
+      <h3>Deal Intelligence</h3>
+      <p style="font-size:0.82rem;">Enrich the synthesizer with proprietary deal context:</p>
+      <ul style="font-size:0.8rem;">
+        <li>Internal deal comps database (not just public M&A)</li>
+        <li>Board-level IC decision history</li>
+        <li>Multi-asset platform deal modeling</li>
+        <li>Territory-specific licensing structures</li>
+        <li>Automated term sheet generation</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: Considerations ==================== -->
+<div class="slide">
+  <p class="section-label">Considerations</p>
+  <h2>Open questions and tradeoffs</h2>
+  <div class="two-col mt-1">
+    <div>
+      <div class="card">
+        <h3>Data & Accuracy</h3>
+        <ul style="font-size:0.8rem;">
+          <li><strong>Peak sales variance</strong> — largest source of output instability. Consensus forecasts or internal models would make this deterministic</li>
+          <li><strong>Multi-asset platform deals</strong> — system evaluates single assets; cannot bundle 8 programs like AZ/CSPC $18.5B deal</li>
+          <li><strong>Territory-specific modeling</strong> — licensing territory (ex-US, ex-China) defaults to worldwide; needs UI selector and market fraction data</li>
+          <li><strong>Paywalled literature</strong> — science agent cannot access NEJM/Lancet full text; institutional access would improve evidence quality</li>
+        </ul>
+      </div>
+      <div class="card mt-1">
+        <h3>Infrastructure</h3>
+        <ul style="font-size:0.8rem;">
+          <li><strong>Latency</strong> — ~30-60s per analysis (sequential pipeline, 4 LLM calls + 13 API calls). Caching and parallel searches could reduce this</li>
+          <li><strong>Cost</strong> — ~$0.15-0.30 per analysis (Sonnet ×3 + Haiku ×1 + Tavily ×8). Internal data would reduce Tavily dependency</li>
+          <li><strong>Caching</strong> — no result caching today; same asset queried twice runs full pipeline both times</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Model & Reliability</h3>
+        <ul style="font-size:0.8rem;">
+          <li><strong>LLM non-determinism</strong> — temperature 0.2 means ~10-20% variance in outputs. Lower temperature = more consistent but less nuanced</li>
+          <li><strong>JSON parse failures</strong> — no retry logic; single malformed LLM response produces fallback/empty data</li>
+          <li><strong>Deal multiple self-capping</strong> — model sometimes computes a high multiple then self-caps to a lower value (conservative bias)</li>
+          <li><strong>Hallucinated metrics</strong> — LLM may fabricate efficacy numbers if Tavily/PubMed return sparse data</li>
+        </ul>
+      </div>
+      <div class="card mt-1">
+        <h3>Enterprise Readiness</h3>
+        <ul style="font-size:0.8rem;">
+          <li><strong>Authentication</strong> — no user auth; single-tenant only</li>
+          <li><strong>Audit trail</strong> — no persistent logging of analyses or assumptions</li>
+          <li><strong>Data governance</strong> — internal data via MCP needs access controls and compliance review</li>
+          <li><strong>Model evaluation</strong> — need systematic benchmarking against historical deals (beyond 4 test assets)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /deck -->
 
 <script>
