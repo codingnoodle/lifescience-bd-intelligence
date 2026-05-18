@@ -83,9 +83,9 @@ function BarChart({ segments, maxVal, variant, dealMarkerBn }) {
   );
 }
 
-function WaterfallCard({ variant, result, maxVal }) {
+function WaterfallCard({ variant, result, maxVal, scenarioStrategic }) {
   const isRisk = variant === "risk";
-  const { scenarioStandalone, scenarioDisplacement, scenarioStrategic } = result;
+  const { scenarioStandalone, scenarioDisplacement } = result;
 
   const standaloneVal = isRisk ? scenarioStandalone.riskAdjustedBn : scenarioStandalone.ifSuccessBn;
   const displacementVal = isRisk ? scenarioDisplacement.riskAdjustedBn : scenarioDisplacement.ifSuccessBn;
@@ -102,7 +102,7 @@ function WaterfallCard({ variant, result, maxVal }) {
 
   const dealMarkerBn =
     !isRisk && scenarioStrategic.predictedUpfrontBn != null
-      ? scenarioStrategic.predictedUpfrontBn + (scenarioStrategic.predictedCvrBn ?? 0)
+      ? scenarioStrategic.predictedTotalBn ?? scenarioStrategic.predictedUpfrontBn
       : null;
 
   return (
@@ -153,8 +153,8 @@ function WaterfallCard({ variant, result, maxVal }) {
   );
 }
 
-function ComparisonTable({ result }) {
-  const { scenarioStandalone, scenarioDisplacement, scenarioStrategic } = result;
+function ComparisonTable({ result, scenarioStrategic, dealMode }) {
+  const { scenarioStandalone, scenarioDisplacement } = result;
 
   const riskStandalone = scenarioStandalone.riskAdjustedBn;
   const riskDisplacement = scenarioDisplacement.riskAdjustedBn;
@@ -166,9 +166,9 @@ function ComparisonTable({ result }) {
 
   const predictedUpfront = scenarioStrategic.predictedUpfrontBn;
   const predictedTotal = scenarioStrategic.predictedTotalBn;
-  const dealStructure = scenarioStrategic.dealStructure;
+  const territory = scenarioStrategic.territory;
   const milestones = scenarioStrategic.milestones;
-  const dealTotal = predictedTotal ?? (predictedUpfront != null ? predictedUpfront + (scenarioStrategic.predictedCvrBn ?? 0) : null);
+  const dealTotal = predictedTotal ?? predictedUpfront;
 
   const ceilingLow = Math.floor(succeedStrategic);
   const ceilingHigh = Math.ceil(dealTotal ?? succeedStrategic * 1.3);
@@ -213,7 +213,7 @@ function ComparisonTable({ result }) {
         <>
           <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center py-2 mt-1 border-t border-gray-300">
             <span className="text-xs text-gray-900 font-medium">
-              Deal economics {dealStructure ? <span className="text-[10px] text-gray-400 ml-1">({dealStructure})</span> : null}
+              Deal economics <span className="text-[10px] text-gray-400 ml-1">({dealMode === "licensing" ? "Licensing" : "M&A"}{territory && territory !== "worldwide" && dealMode === "licensing" ? ` · ${territory}` : ""})</span>
             </span>
             <span className="text-[10px] font-medium text-gray-400 tracking-wider text-right min-w-[55px]">UPFRONT</span>
             <span className="text-[10px] font-medium text-gray-400 tracking-wider text-right min-w-[55px]">TOTAL</span>
@@ -262,32 +262,57 @@ function ComparisonTable({ result }) {
   );
 }
 
+const DEAL_MODES = ["M&A", "Licensing"];
+
 export default function ValuationWaterfall({ result }) {
   const [view, setView] = useState("Side-by-side");
+  const [dealMode, setDealMode] = useState("M&A");
 
   if (!result) return null;
 
-  const { scenarioStrategic } = result;
-  const strategicSucceed = scenarioStrategic?.ifSuccessBn ?? 0;
+  const scenarioStrategic = dealMode === "Licensing"
+    ? result.scenarioStrategicLicensing
+    : result.scenarioStrategicMa;
+
+  // Fallback for old data format
+  const strat = scenarioStrategic || result.scenarioStrategic || {};
+  const strategicSucceed = strat?.ifSuccessBn ?? 0;
   const maxVal = Math.max(strategicSucceed, 9);
 
   return (
     <div className="py-1 text-[13px]">
-      {/* Toggle */}
-      <div className="flex bg-gray-100 rounded-full p-0.5 gap-0.5 text-[11px] mb-3.5 w-fit">
-        {VIEWS.map((v) => (
-          <button
-            key={v}
-            onClick={() => setView(v)}
-            className={`px-3.5 py-1.5 rounded-full text-[11px] font-medium border-none cursor-pointer transition-colors ${
-              view === v
-                ? "bg-white text-gray-900 shadow-sm"
-                : "bg-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {v}
-          </button>
-        ))}
+      {/* View toggle + Deal mode toggle */}
+      <div className="flex items-center gap-3 mb-3.5 flex-wrap">
+        <div className="flex bg-gray-100 rounded-full p-0.5 gap-0.5 text-[11px] w-fit">
+          {VIEWS.map((v) => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className={`px-3.5 py-1.5 rounded-full text-[11px] font-medium border-none cursor-pointer transition-colors ${
+                view === v
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "bg-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+        <div className="flex bg-gray-100 rounded-full p-0.5 gap-0.5 text-[11px] w-fit">
+          {DEAL_MODES.map((m) => (
+            <button
+              key={m}
+              onClick={() => setDealMode(m)}
+              className={`px-3.5 py-1.5 rounded-full text-[11px] font-medium border-none cursor-pointer transition-colors ${
+                dealMode === m
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "bg-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Insight callout */}
@@ -297,21 +322,23 @@ export default function ValuationWaterfall({ result }) {
           <path d="M12 16v-4M12 8h.01" />
         </svg>
         <div>
-          Deal prices are typically struck closer to the <b>if-succeed</b> case with risk borne by the buyer via CVRs or milestones.
-          Use risk-adjusted for internal IC decisioning, if-succeed for estimating negotiation ceilings.
+          {dealMode === "M&A"
+            ? <>In <b>M&A</b>, the buyer acquires outright — upfront ≈ total. Toggle to Licensing to see milestone + royalty structure.</>
+            : <>In <b>Licensing</b>, risk is shared — upfront is lower with milestones + royalties stacking to the headline total. Toggle to M&A to see acquisition pricing.</>
+          }
         </div>
       </div>
 
       {/* Waterfall cards */}
       {(view === "Risk-adjusted" || view === "Side-by-side") && (
-        <WaterfallCard variant="risk" result={result} maxVal={maxVal} />
+        <WaterfallCard variant="risk" result={result} maxVal={maxVal} scenarioStrategic={strat} />
       )}
       {(view === "If-succeed" || view === "Side-by-side") && (
-        <WaterfallCard variant="succeed" result={result} maxVal={maxVal} />
+        <WaterfallCard variant="succeed" result={result} maxVal={maxVal} scenarioStrategic={strat} />
       )}
 
       {/* Comparison table */}
-      {view === "Side-by-side" && <ComparisonTable result={result} />}
+      {view === "Side-by-side" && <ComparisonTable result={result} scenarioStrategic={strat} dealMode={dealMode.toLowerCase()} />}
     </div>
   );
 }

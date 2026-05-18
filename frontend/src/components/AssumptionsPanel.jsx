@@ -90,7 +90,7 @@ export default function AssumptionsPanel({ result, onRecalculate }) {
   const indications = result.indications || [];
   const buyers = result.buyers || [];
   const tension = result.biddingTension;
-  const scenarioStrategic = result.scenarioStrategic;
+  const scenarioStrategic = result.scenarioStrategicMa || result.scenarioStrategic;
   const scenarioStandalone = result.scenarioStandalone;
   const scenarioDisplacement = result.scenarioDisplacement;
 

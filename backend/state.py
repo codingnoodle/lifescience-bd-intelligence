@@ -61,6 +61,7 @@ class BDState(TypedDict, total=False):
     # Input
     message: str
     filters: Dict[str, Any]
+    deal_mode: str  # "ma" | "licensing" | "auto" — user-selected or auto-detected
 
     # Parsed by research planner
     drug_asset_name: str
@@ -76,9 +77,10 @@ class BDState(TypedDict, total=False):
     summary: Optional[str]
 
     # Three-scenario valuation (replaces single deal range)
-    scenario_standalone: Optional[Dict[str, Any]]    # {value_bn, derivation_string}
-    scenario_displacement: Optional[Dict[str, Any]]  # {value_bn, derivation_string}
-    scenario_strategic: Optional[Dict[str, Any]]     # {value_bn, derivation_string}
+    scenario_standalone: Optional[Dict[str, Any]]
+    scenario_displacement: Optional[Dict[str, Any]]
+    scenario_strategic_ma: Optional[Dict[str, Any]]        # M&A deal economics
+    scenario_strategic_licensing: Optional[Dict[str, Any]]  # Licensing deal economics
 
     # Buyer analysis
     buyers: Optional[List[Dict[str, Any]]]     # [{name, urgency_multiplier, confidence, rationale}]

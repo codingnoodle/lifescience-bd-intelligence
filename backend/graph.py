@@ -40,12 +40,16 @@ def research_planner_node(state: BDState) -> Dict[str, Any]:
             "launch_year": ind.get("launch_year"),
         })
 
-    logger.info(f"Parsed: {asset_name}, {len(indications)} indication(s)")
+    # Deal mode: prefer explicit from state (UI toggle), then planner detection, then auto
+    deal_mode = state.get("deal_mode") or parsed.get("deal_mode", "auto")
+
+    logger.info(f"Parsed: {asset_name}, {len(indications)} indication(s), deal_mode={deal_mode}")
     return {
         "drug_asset_name": asset_name,
         "indications": indications,
         "clarification_needed": clarification,
         "research_plan": f"Analyzing {asset_name} across {len(indications)} indication(s).",
+        "deal_mode": deal_mode,
     }
 
 
@@ -83,8 +87,9 @@ def synthesizer_node(state: BDState) -> Dict[str, Any]:
 
     asset_name = state.get("drug_asset_name", "")
     indications = state.get("indications", [])
+    deal_mode = state.get("deal_mode", "auto")
 
-    result = run_synthesizer(asset_name, indications)
+    result = run_synthesizer(asset_name, indications, deal_mode=deal_mode)
     return result
 
 

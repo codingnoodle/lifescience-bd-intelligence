@@ -106,10 +106,11 @@ class AnalyzeResult(BaseModel):
     marketScore: Optional[float] = None
     recommendation: Optional[str] = None
     indications: List[IndicationOut] = []
-    # Three scenarios
+    # Three scenarios + dual strategic modes
     scenarioStandalone: Optional[ScenarioOut] = None
     scenarioDisplacement: Optional[ScenarioOut] = None
-    scenarioStrategic: Optional[ScenarioOut] = None
+    scenarioStrategicMa: Optional[ScenarioOut] = None
+    scenarioStrategicLicensing: Optional[ScenarioOut] = None
     # Buyers
     buyers: List[BuyerOut] = []
     biddingTension: Optional[BiddingTensionOut] = None
@@ -155,7 +156,7 @@ def _scenario_to_out(s: dict | None) -> dict | None:
         "ifSuccessBn": s.get("if_success_bn"),
         "riskAdjustedBn": s.get("risk_adjusted_bn"),
         "dealMultiple": s.get("deal_multiple"),
-        "dealStructure": s.get("deal_structure"),
+        "territory": s.get("territory"),
         "predictedUpfrontBn": s.get("predicted_upfront_bn"),
         "milestones": {
             "regulatoryMilestonesBn": milestones.get("regulatory_milestones_bn"),
@@ -163,7 +164,6 @@ def _scenario_to_out(s: dict | None) -> dict | None:
             "royaltyNpvBn": milestones.get("royalty_npv_bn"),
         } if milestones else None,
         "predictedTotalBn": s.get("predicted_total_bn"),
-        "predictedCvrBn": s.get("predicted_cvr_bn"),
         "derivationString": s.get("derivation_string"),
     }
 
@@ -176,21 +176,21 @@ def _build_result(state: dict) -> dict:
 
     composite = state.get("composite_score")
     rec = state.get("recommendation")
-    strategic = state.get("scenario_strategic", {})
-    success_val = strategic.get("if_success_bn") if strategic else None
-    risk_val = strategic.get("risk_adjusted_bn") if strategic else None
-    upfront_val = strategic.get("predicted_upfront_bn") if strategic else None
-    cvr_val = strategic.get("predicted_cvr_bn") if strategic else None
+    ma = state.get("scenario_strategic_ma", {})
+    lic = state.get("scenario_strategic_licensing", {})
+    ma_upfront = ma.get("predicted_upfront_bn") if ma else None
+    ma_total = ma.get("predicted_total_bn") if ma else None
+    lic_upfront = lic.get("predicted_upfront_bn") if lic else None
+    lic_total = lic.get("predicted_total_bn") if lic else None
 
     # Build chat message
     if composite is not None:
         rec_str = rec or ("GO" if composite >= 6.5 else ("WATCH" if composite >= 4.5 else "NO-GO"))
         chat_msg = f"Analysis complete for **{asset_name}**: {rec_str} (score {composite:.1f}/10)."
-        if success_val:
-            if cvr_val and cvr_val > 0:
-                chat_msg += f" Strategic scenario: ${upfront_val:.1f}B upfront + ${cvr_val:.1f}B CVR = ${success_val:.1f}B if succeeds (${risk_val:.1f}B risk-adjusted)."
-            else:
-                chat_msg += f" Strategic scenario: ${success_val:.1f}B if succeeds (${risk_val:.1f}B risk-adjusted)."
+        if ma_upfront:
+            chat_msg += f" M&A: ${ma_upfront:.1f}B upfront (${ma_total:.1f}B total)."
+        if lic_upfront:
+            chat_msg += f" Licensing: ${lic_upfront:.1f}B upfront (${lic_total:.1f}B total)."
     else:
         chat_msg = f"Parsed **{asset_name}** with {len(indications)} indication(s)."
 
@@ -208,7 +208,8 @@ def _build_result(state: dict) -> dict:
             "indications": indications_out,
             "scenarioStandalone": _scenario_to_out(state.get("scenario_standalone")),
             "scenarioDisplacement": _scenario_to_out(state.get("scenario_displacement")),
-            "scenarioStrategic": _scenario_to_out(state.get("scenario_strategic")),
+            "scenarioStrategicMa": _scenario_to_out(state.get("scenario_strategic_ma")),
+            "scenarioStrategicLicensing": _scenario_to_out(state.get("scenario_strategic_licensing")),
             "buyers": [
                 {"name": b.get("name", ""), "urgencyMultiplier": b.get("urgency_multiplier"),
                  "rationale": b.get("rationale"), "confidence": b.get("confidence")}

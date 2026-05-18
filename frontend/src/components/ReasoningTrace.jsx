@@ -74,7 +74,7 @@ export default function ReasoningTrace({ result }) {
   const tension = result.biddingTension || {};
   const scStandalone = result.scenarioStandalone || {};
   const scDisplacement = result.scenarioDisplacement || {};
-  const scStrategic = result.scenarioStrategic || {};
+  const scStrategic = result.scenarioStrategicMa || result.scenarioStrategic || {};
 
   const riskAdj = scStrategic.riskAdjustedBn;
   const ifSucceed = scStrategic.ifSuccessBn;

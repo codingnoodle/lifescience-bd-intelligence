@@ -58,7 +58,7 @@ export default function ResultCard({ result, onRecalculate }) {
 
   const score = compositeScore ?? result.score;
   const hasWaterfall =
-    result.scenarioStandalone || result.scenarioDisplacement || result.scenarioStrategic;
+    result.scenarioStandalone || result.scenarioDisplacement || result.scenarioStrategicMa || result.scenarioStrategicLicensing;
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 mt-2 w-full">

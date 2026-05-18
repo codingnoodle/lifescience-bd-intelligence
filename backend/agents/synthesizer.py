@@ -48,6 +48,35 @@ def _npv_discount(launch_year: int | None) -> float:
     return round(1.0 / ((1.10) ** years_out), 3)
 
 
+DUAL_DEAL_INSTRUCTIONS = """STEP 4 — DUAL DEAL ECONOMICS (compute BOTH M&A and Licensing)
+A buyer evaluating an asset considers both structures before deciding. Compute both side by side.
+
+4A. M&A / ACQUISITION (buyer acquires entire company/asset, takes all risk):
+   - territory: always "worldwide"
+   - predicted_upfront_bn: the headline acquisition price ≈ strategic if_success_bn
+     (buyer absorbs risk, pays for full value). CVR/earnout is small (0-20% of total).
+   - regulatory_milestones_bn: small CVR/earnout if early-stage ($0-1B). Zero for marketed.
+   - commercial_milestones_bn: rare in M&A (typically 0). Only if earnout structure.
+   - royalty_npv_bn: 0 (buyer owns 100%, no royalty).
+   - predicted_total_bn = upfront + CVR. For most M&A: total ≈ upfront.
+
+4B. LICENSING / PARTNERSHIP (buyer licenses program, risk is shared via milestones):
+   - territory: "worldwide" | "ex-US" | "ex-China" | "ex-Japan" | other.
+     Default worldwide unless context suggests otherwise.
+     Territory fractions: US=60%, EU=25%, China=15%, Japan=10%, rest=15%.
+   - predicted_upfront_bn: cash at signing. Upfront fraction of total by phase:
+       Preclinical: 15-25%  |  Phase 1: 20-30%  |  Phase 1/2: 25-35%
+       Phase 2: 30-40%  |  Phase 3: 35-50%  |  Marketed: 50-60%
+   - regulatory_milestones_bn: $200-500M per indication per major milestone
+     (Phase 2/3 start, FDA filing, FDA approval). Scale by territory fraction.
+   - commercial_milestones_bn: $300-800M total across sales tiers ($500M, $1B, $2B).
+     Scale by territory fraction.
+   - royalty_npv_bn: NPV of tiered royalty stream.
+     Rates: 15-20% early-stage, 20-25% Phase 2+, 25-30% Phase 3/marketed.
+     royalty_npv = peak_displacement × territory_fraction × royalty_rate × revenue_multiplier × npv_discount
+   - predicted_total_bn = upfront + regulatory + commercial + royalty_npv.
+     Total is 2-3x upfront for early-stage, 1.5-2x for late-stage."""
+
 SYNTHESIZER_PROMPT = """You are a pharma BD executive and deal banker writing a valuation memo.
 You receive fully analyzed indication data (science + market) and must determine:
 (a) who will buy this asset, (b) how urgently, (c) what they will pay.
@@ -146,27 +175,7 @@ c. Strategic deal price (what the winning bidder actually pays):
    The if_success strategic value is what a motivated buyer pays. Real deal prices track this number.
    The risk_adjusted number shows the expected value of the acquisition.
 
-STEP 4 — DEAL ECONOMICS: UPFRONT + MILESTONE BREAKDOWN
-Output both upfront and total deal value with milestone structure:
-
-a. predicted_upfront_bn: Cash at signing. The risk-discounted amount paid regardless of outcome.
-   - For M&A (acquiring entire company/asset): upfront ≈ strategic if_success_bn (buyer takes all risk)
-   - For licensing (partnering a program): upfront = 25-50% of total, buyer de-risks via milestones
-
-b. Milestone breakdown (non-upfront payments, contingent on success):
-   - regulatory_milestones_bn: payments at Phase 2/3 start, FDA filing, FDA approval per indication.
-     Typical: $200-500M per indication × number of indications in licensed territory.
-   - commercial_milestones_bn: payments at sales thresholds ($500M, $1B, $2B annual sales).
-     Typical: $300-800M total across tiers.
-   - royalty_npv_bn: NPV of royalty stream (15-25% of net sales over patent life).
-     Typical: peak_sales_with_displacement_bn × royalty_rate × revenue_multiplier × npv_discount.
-
-c. predicted_total_bn = upfront + regulatory_milestones + commercial_milestones + royalty_npv.
-   This is the headline "total deal value" reported in press releases.
-
-d. Determine deal_structure: "M&A" if asset is a standalone company or full platform acquisition.
-   "licensing" if it's a specific program from a larger company (ex-region rights, co-development, etc.).
-   For M&A: milestones are small (CVR/earnout only). For licensing: milestones are 50-75% of total.
+DUAL_DEAL_INSTRUCTIONS_PLACEHOLDER
 
 STEP 5 — COMPOSITE SCORE AND RECOMMENDATION
 composite_score = 0.60 × mean(science_scores) + 0.40 × mean(market_scores)
@@ -224,11 +233,11 @@ Return ONLY valid JSON (no markdown fences):
     "risk_adjusted_bn": 2.6,
     "derivation_string": "Displacement: $3.5B peak × 4.0 rev × 0.62 NPV = $8.7B if success; × 30% PTRS = $2.6B risk-adj"
   }},
-  "scenario_strategic": {{
+  "scenario_strategic_ma": {{
     "if_success_bn": 7.0,
     "risk_adjusted_bn": 2.1,
     "deal_multiple": 2.0,
-    "deal_structure": "M&A",
+    "territory": "worldwide",
     "predicted_upfront_bn": 5.5,
     "milestones": {{
       "regulatory_milestones_bn": 0.8,
@@ -236,7 +245,21 @@ Return ONLY valid JSON (no markdown fences):
       "royalty_npv_bn": 0.0
     }},
     "predicted_total_bn": 6.8,
-    "derivation_string": "Strategic: $3.5B peak × 2.0x deal multiple = $7.0B (base 1.5x Ph1/2 + 0.3x urgency + 0.2x bidding); M&A structure: $5.5B upfront + $0.8B regulatory + $0.5B commercial = $6.8B total; risk-adj $2.1B"
+    "derivation_string": "M&A: $3.5B peak × 2.0x multiple = $7.0B; $5.5B upfront + $0.8B reg + $0.5B comm = $6.8B total"
+  }},
+  "scenario_strategic_licensing": {{
+    "if_success_bn": 7.0,
+    "risk_adjusted_bn": 2.1,
+    "deal_multiple": 2.0,
+    "territory": "worldwide",
+    "predicted_upfront_bn": 2.5,
+    "milestones": {{
+      "regulatory_milestones_bn": 1.5,
+      "commercial_milestones_bn": 0.8,
+      "royalty_npv_bn": 3.2
+    }},
+    "predicted_total_bn": 8.0,
+    "derivation_string": "Licensing: $2.5B upfront (35% of total) + $1.5B reg milestones + $0.8B comm milestones + $3.2B royalty NPV = $8.0B total"
   }}
 }}
 
@@ -244,12 +267,18 @@ recommendation must be exactly one of: GO, WATCH, NO-GO.
 summary must be plain English, no jargon, no bullet points, no markdown."""
 
 
-def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
+def run_synthesizer(asset_name: str, indications: list[dict], deal_mode: str = "auto") -> dict:
     """
     Produce buyer mapping, bidding tension, three-scenario valuation, and composite score.
     Indications must have all science + market fields populated.
     """
     _empty_scenario = {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "No data"}
+    _empty_strategic = {
+        "if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0,
+        "territory": "worldwide", "predicted_upfront_bn": 0,
+        "milestones": {"regulatory_milestones_bn": 0, "commercial_milestones_bn": 0, "royalty_npv_bn": 0},
+        "predicted_total_bn": 0, "derivation_string": "No data",
+    }
     if not indications:
         return {
             "composite_score": 0.0, "science_score": 0.0, "market_score": 0.0,
@@ -258,7 +287,8 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
             "buyers": [], "bidding_tension": {"score": 0, "premium": 0, "signals": [], "confidence": "low"},
             "scenario_standalone": _empty_scenario,
             "scenario_displacement": _empty_scenario,
-            "scenario_strategic": {**_empty_scenario, "deal_multiple": 0, "predicted_upfront_bn": 0, "predicted_cvr_bn": 0},
+            "scenario_strategic_ma": _empty_strategic,
+            "scenario_strategic_licensing": _empty_strategic,
         }
 
     # Pre-compute NPV discount factors and per-indication dual values
@@ -332,7 +362,10 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
 
     buyer_context = format_buyer_context_for_prompt()
 
-    prompt = SYNTHESIZER_PROMPT.format(
+    prompt_text = SYNTHESIZER_PROMPT.replace(
+        "DUAL_DEAL_INSTRUCTIONS_PLACEHOLDER", DUAL_DEAL_INSTRUCTIONS
+    )
+    prompt = prompt_text.format(
         asset_name=asset_name,
         indications_detail=indications_detail,
         buyer_context=buyer_context,
@@ -355,10 +388,17 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
             raw = raw[4:]
     raw = raw.strip()
 
+    _empty_strategic = {
+        "if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0,
+        "territory": "worldwide", "predicted_upfront_bn": 0,
+        "milestones": {"regulatory_milestones_bn": 0, "commercial_milestones_bn": 0, "royalty_npv_bn": 0},
+        "predicted_total_bn": 0, "derivation_string": "No data",
+    }
+
     try:
         parsed = json.loads(raw)
         return {
-            "indications": indications,  # enriched with per-indication dual values
+            "indications": indications,
             "composite_score": parsed.get("composite_score"),
             "science_score": parsed.get("science_score"),
             "market_score": parsed.get("market_score"),
@@ -368,13 +408,15 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
             "bidding_tension": parsed.get("bidding_tension", {}),
             "scenario_standalone": parsed.get("scenario_standalone", {}),
             "scenario_displacement": parsed.get("scenario_displacement", {}),
-            "scenario_strategic": parsed.get("scenario_strategic", {}),
+            "scenario_strategic_ma": parsed.get("scenario_strategic_ma", _empty_strategic),
+            "scenario_strategic_licensing": parsed.get("scenario_strategic_licensing", _empty_strategic),
         }
     except json.JSONDecodeError as e:
         logger.error(f"Synthesizer JSON parse error: {e}\nRaw: {raw[:300]}")
         sci_avg = sum(ind.get("science_score", 5) for ind in indications) / len(indications)
         mkt_avg = sum(ind.get("market_score", 5) for ind in indications) / len(indications)
         composite = round(sci_avg * 0.6 + mkt_avg * 0.4, 1)
+        _empty_scenario = {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "Parse error — fallback"}
         return {
             "composite_score": composite,
             "science_score": round(sci_avg, 1),
@@ -383,7 +425,8 @@ def run_synthesizer(asset_name: str, indications: list[dict]) -> dict:
             "summary": f"Analysis of {asset_name} across {len(indications)} indication(s). Score {composite}/10.",
             "buyers": [],
             "bidding_tension": {"score": 0, "premium": 0, "signals": [], "confidence": "low"},
-            "scenario_standalone": {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "Parse error — fallback"},
-            "scenario_displacement": {"if_success_bn": 0, "risk_adjusted_bn": 0, "derivation_string": "Parse error — fallback"},
-            "scenario_strategic": {"if_success_bn": 0, "risk_adjusted_bn": 0, "deal_multiple": 0, "deal_structure": "unknown", "predicted_upfront_bn": 0, "milestones": {"regulatory_milestones_bn": 0, "commercial_milestones_bn": 0, "royalty_npv_bn": 0}, "predicted_total_bn": 0, "derivation_string": "Parse error — fallback"},
+            "scenario_standalone": _empty_scenario,
+            "scenario_displacement": _empty_scenario,
+            "scenario_strategic_ma": {**_empty_strategic, "derivation_string": "Parse error — fallback"},
+            "scenario_strategic_licensing": {**_empty_strategic, "derivation_string": "Parse error — fallback"},
         }

@@ -53,6 +53,13 @@ OR for a specific asset:
   "clarification_needed": null
 }}
 
+Also detect deal_mode from the user's language:
+- "licensing", "partnership", "out-license", "ex-US rights", "ex-China", "royalty", "co-develop" → "licensing"
+- "acquisition", "M&A", "buyout", "acquire", "takeover" → "ma"
+- Otherwise → "auto" (let the synthesizer decide based on asset characteristics)
+
+Add to your JSON output: "deal_mode": "auto" (or "ma" or "licensing")
+
 Rules:
 - NEVER set clarification_needed. Always make your best inference.
 - For discovery queries: populate scan_criteria from message + sidebar filters. launch_year and keywords are optional (null if not mentioned).
