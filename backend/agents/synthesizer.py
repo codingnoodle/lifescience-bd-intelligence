@@ -175,6 +175,12 @@ c. Strategic deal price (what the winning bidder actually pays):
    The if_success strategic value is what a motivated buyer pays. Real deal prices track this number.
    The risk_adjusted number shows the expected value of the acquisition.
 
+   IMPORTANT: Always compute if_success and risk_adjusted from the formula above using peak sales × deal multiple.
+   Do NOT substitute a known deal price as the if_success value — that is hardcoding, not analysis.
+   If Tavily search reveals a real deal price, mention it in the derivation_string for context, but the
+   if_success_bn and risk_adjusted_bn numbers MUST come from the formula. The strategic if_success value
+   should always be >= the displacement if_success value (since it adds buyer premium on top).
+
 DUAL_DEAL_INSTRUCTIONS_PLACEHOLDER
 
 STEP 5 — COMPOSITE SCORE AND RECOMMENDATION
