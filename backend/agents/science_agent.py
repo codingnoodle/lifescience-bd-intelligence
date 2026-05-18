@@ -10,6 +10,9 @@ import os
 from langchain_core.messages import HumanMessage
 from backend.config import sonnet
 from backend.utils.ptrs_lookup import get_adjusted_ptrs, VALID_DERISKING_SIGNALS
+from backend.tools.clinicaltrials import search_trials, format_trials_for_prompt
+from backend.tools.pubmed import search_pubmed, format_pubmed_for_prompt
+from backend.tools.openfda import search_fda_designations, format_fda_for_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +27,16 @@ Asset: {asset_name}
 Indications to assess:
 {indications_list}
 
---- ClinicalTrials.gov data ---
+--- ClinicalTrials.gov (structured API) ---
 {ct_data}
 
---- PubMed / conference literature (Tavily) ---
+--- FDA Designations (OpenFDA API) ---
+{fda_data}
+
+--- PubMed Literature (API) ---
+{pubmed_data}
+
+--- Additional conference / news search (Tavily) ---
 {tavily_data}
 
 ---
@@ -36,6 +45,11 @@ For each indication, output a structured positioning_profile and de-risking sign
 
 DE-RISKING SIGNAL VOCABULARY — use ONLY these exact strings, no others:
 {signal_vocab}
+
+IMPORTANT: The FDA Designations section above is from the official OpenFDA API. If it confirms
+orphan_drug, fast_track, or breakthrough_designation, you MUST include those signals.
+If the FDA data says no designations found, do NOT infer them from other sources unless
+PubMed or ClinicalTrials.gov explicitly states the designation was granted.
 
 Signal definitions:
 - orphan_drug: has orphan drug designation from FDA or EMA
@@ -128,11 +142,20 @@ def run_science_agent(asset_name: str, indications: list[dict]) -> list[dict]:
     """
     logger.info(f"Science agent: analyzing {len(indications)} indication(s) for {asset_name}")
 
-    ct_data = _tavily_search(
-        f"{asset_name} clinical trial ClinicalTrials.gov results patients dosed",
-        domains=["clinicaltrials.gov", "pubmed.ncbi.nlm.nih.gov", "fda.gov",
-                 "asco.org", "esmo.org", "ash.confex.com", "biorxiv.org"]
-    )
+    # Direct API calls — structured, deterministic data
+    trials = search_trials(asset_name)
+    ct_data = format_trials_for_prompt(trials)
+    logger.info(f"Science agent: found {len(trials)} trials on ClinicalTrials.gov")
+
+    pubmed_articles = search_pubmed(f"{asset_name} clinical trial efficacy safety")
+    pubmed_data = format_pubmed_for_prompt(pubmed_articles)
+    logger.info(f"Science agent: found {len(pubmed_articles)} PubMed articles")
+
+    fda_result = search_fda_designations(asset_name)
+    fda_data = format_fda_for_prompt(fda_result)
+    logger.info(f"Science agent: FDA designations — {fda_data[:100]}")
+
+    # Tavily for conference posters, news, and data not in structured APIs
     tavily_data = _tavily_search(
         f"{asset_name} mechanism of action efficacy safety trial results ASH ASCO ESMO conference"
     )
@@ -146,6 +169,8 @@ def run_science_agent(asset_name: str, indications: list[dict]) -> list[dict]:
         asset_name=asset_name,
         indications_list=ind_lines,
         ct_data=ct_data,
+        fda_data=fda_data,
+        pubmed_data=pubmed_data,
         tavily_data=tavily_data,
         signal_vocab=_SIGNAL_VOCAB,
     )
@@ -200,6 +225,15 @@ def run_science_agent(asset_name: str, indications: list[dict]) -> list[dict]:
 
         # Compute adjusted PTRS in Python (not by LLM)
         signals = [s for s in result.get("de_risking_signals", []) if s in VALID_DERISKING_SIGNALS]
+
+        # Merge FDA API designations as ground truth (override LLM if it missed them)
+        if fda_result.get("orphan_drug") and "orphan_drug" not in signals:
+            signals.append("orphan_drug")
+        if fda_result.get("fast_track") and "fast_track" not in signals:
+            signals.append("fast_track")
+        if fda_result.get("breakthrough_designation") and "breakthrough_designation" not in signals:
+            signals.append("breakthrough_designation")
+
         ptrs_result = get_adjusted_ptrs(ind["phase"], ind["therapeutic_area"], signals)
 
         ind_copy.update({
