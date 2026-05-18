@@ -170,8 +170,10 @@ function ComparisonTable({ result, scenarioStrategic, dealMode }) {
   const milestones = scenarioStrategic.milestones;
   const dealTotal = predictedTotal ?? predictedUpfront;
 
-  const ceilingLow = Math.floor(succeedStrategic);
-  const ceilingHigh = Math.ceil(dealTotal ?? succeedStrategic * 1.3);
+  const rawLow = dealTotal ?? succeedStrategic;
+  const rawHigh = succeedStrategic;
+  const ceilingLow = Math.floor(Math.min(rawLow, rawHigh));
+  const ceilingHigh = Math.ceil(Math.max(rawLow, rawHigh));
 
   const comparatorConf = result.indications?.[0]?.comparatorConfidence ?? "medium";
   const diffConf = result.indications?.[0]?.differentiationVerdict === "differentiated" ? "high" : "medium";
