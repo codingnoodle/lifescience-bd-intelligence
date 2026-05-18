@@ -312,6 +312,36 @@ function ScoringRubric({ onClose }) {
           </div>
         </div>
 
+        {/* Dual deal mode */}
+        <div>
+          <div className="text-[11px] font-medium text-gray-400 tracking-wide mb-2">DEAL MODE: M&A vs. LICENSING</div>
+          <div className="bg-gray-50 rounded-lg px-3 py-3 flex flex-col gap-2.5 leading-relaxed">
+            <div className="text-[11px] text-gray-500 mb-1">
+              Use the <span className="font-mono bg-white border border-gray-200 rounded px-1.5 py-0.5">M&A</span> / <span className="font-mono bg-white border border-gray-200 rounded px-1.5 py-0.5">Licensing</span> toggle on the valuation waterfall to compare deal structures.
+            </div>
+            <div>
+              <span className="font-medium text-blue-600">M&A / Acquisition</span>
+              <div className="text-[11px] text-gray-500 mt-0.5">
+                Buyer acquires entire company. Upfront ≈ total deal value. No royalties. Small CVR/earnout if any.
+              </div>
+            </div>
+            <div>
+              <span className="font-medium text-purple-600">Licensing / Partnership</span>
+              <div className="text-[11px] text-gray-500 mt-0.5">
+                Buyer licenses program for a territory. Upfront = 25-50% of total. Rest is milestones + royalties:
+              </div>
+              <ul className="mt-1 ml-3 list-disc flex flex-col gap-0.5 text-[11px] text-gray-500">
+                <li><span className="text-gray-700">Regulatory milestones</span> — payments at Phase 2/3 start, FDA filing, approval</li>
+                <li><span className="text-gray-700">Commercial milestones</span> — payments at $500M, $1B, $2B sales tiers</li>
+                <li><span className="text-gray-700">Royalty NPV</span> — 15-30% of net sales over patent life</li>
+              </ul>
+            </div>
+            <div className="text-[10px] text-gray-400 border-t border-gray-200 pt-2 mt-1">
+              Both modes use the same underlying valuation (scenarios 1-3). Only the deal economics layer differs.
+            </div>
+          </div>
+        </div>
+
         {/* PTRS table */}
         <div>
           <div className="text-[11px] font-medium text-gray-400 tracking-wide mb-2">PTRS BY PHASE (ONCOLOGY)</div>
